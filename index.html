@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edge of Fate Stat Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a202c; /* Dark gray background */
+            color: #e2e8f0; /* Light gray text */
+        }
+        .stat-card {
+            background-color: #2d3748; /* Slightly lighter dark gray for cards */
+            border-radius: 0.5rem; /* Rounded corners */
+            padding: 1.5rem; /* Spacing inside cards */
+            margin-bottom: 1.5rem; /* Spacing between cards */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .stat-card h2 {
+            color: #63b3ed; /* Blue accent for titles */
+            border-bottom: 2px solid #4a5568; /* Separator line */
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        label {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            display: block;
+        }
+        input[type="number"], select {
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            border: 1px solid #4a5568; /* Gray border */
+            background-color: #1a202c; /* Dark input background */
+            color: #e2e8f0; /* Light input text */
+            margin-bottom: 1rem;
+            -webkit-appearance: none; /* Remove default styling for select */
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='%23a0aec0' class='w-4 h-4'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E"); /* Custom arrow for select */
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1em;
+            padding-right: 2.5rem; /* Space for the custom arrow */
+        }
+        select:focus { /* Focus style for select */
+            outline: none;
+            border-color: #63b3ed;
+            box-shadow: 0 0 0 2px rgba(99, 179, 237, 0.5);
+        }
+
+        .benefit-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center; /* Align items vertically for multi-line text */
+            padding: 0.5rem 0;
+            border-bottom: 1px dashed #4a5568; /* Dashed separator for items */
+            min-height: 2.5em; /* Ensure consistent height */
+        }
+        .benefit-item:last-child {
+            border-bottom: none;
+        }
+        .benefit-name {
+            color: #a0aec0; /* Medium gray for benefit names */
+            flex-shrink: 0; /* Prevent name from shrinking */
+            margin-right: 0.5rem; /* Space between name and value */
+        }
+        .benefit-value-container { /* Not strictly needed with current textContent update but good for structure */
+            text-align: right;
+        }
+        .benefit-value {
+            font-weight: 600;
+            color: #f0e68c; /* Khaki for benefit values */
+        }
+        .container {
+            max-width: 900px; /* Max width for the content */
+            margin: 2rem auto; /* Centering and top/bottom margin */
+            padding: 1rem; /* Padding for smaller screens */
+        }
+        /* Custom scrollbar for webkit browsers */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #2d3748;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4a5568;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #63b3ed;
+        }
+
+        /* Button styling */
+        .btn {
+            background-color: #63b3ed; /* Blue background */
+            color: #1a202c; /* Dark text */
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem;
+            font-weight: 700;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .btn:hover {
+            background-color: #4299e1; /* Darker blue on hover */
+        }
+        .btn.active {
+            background-color: #4299e1; /* Darker blue for active state */
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3); /* Inset shadow for active button */
+        }
+
+        .toggle-buttons button {
+            flex: 1;
+            margin: 0 0.25rem;
+            min-width: 120px; /* Ensure buttons don't get too small */
+        }
+
+        /* Styling for the dynamically displayed stats under each archetype select */
+        .selected-helmet-stats,
+        .selected-arms-stats,
+        .selected-chest-stats,
+        .selected-legs-stats,
+        .selected-class_item-stats {
+            margin-top: 0.25rem; /* Increased margin-top from -0.5rem to 0.25rem */
+            margin-bottom: 0.75rem; /* Space before next label */
+            padding-left: 0.25rem;
+            font-size: 0.85rem;
+            color: #b2f5ea; /* Teal color for generated stats */
+        }
+
+        /* Styling for custom piece sliders */
+        .custom-slider-group {
+            margin-bottom: 1rem;
+        }
+        .custom-slider-group label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.25rem;
+        }
+        .custom-slider-group input[type="range"] {
+            width: calc(100% - 40px); /* Adjust width to make space for value display */
+            margin-right: 10px; /* Space between slider and value */
+        }
+        .custom-slider-group .slider-value {
+            min-width: 30px; /* Ensure value display has enough room */
+            text-align: right;
+            color: #f0e68c;
+            font-weight: 600;
+        }
+        .custom-slider-flex {
+            display: flex;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-3xl font-bold text-center text-blue-400 mb-8">Edge of Fate Stat Calculator</h1>
+
+        <!-- Toggle Buttons for sections -->
+        <div class="flex justify-center mb-4">
+            <button id="show_manual_input_btn" class="btn active">Manual Input</button>
+            <button id="show_example_pieces_btn" class="btn">Example Pieces</button>
+            <button id="show_custom_pieces_btn" class="btn">Custom Pieces</button>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+            <!-- Left Column: Conditionally rendered sections -->
+            <div>
+                <!-- Input Stat Points Section -->
+                <div id="manual_input_section">
+                    <div class="stat-card">
+                        <h2 class="text-2xl font-semibold">Input Stat Points (0-200)</h2>
+                        <div>
+                            <label for="health_sp">Health Stat Points:</label>
+                            <input type="number" id="health_sp" min="0" max="200" value="0">
+                        </div>
+                        <div>
+                            <label for="melee_sp">Melee Stat Points:</label>
+                            <input type="number" id="melee_sp" min="0" max="200" value="0">
+                        </div>
+                        <div>
+                            <label for="grenade_sp">Grenade Stat Points:</label>
+                            <input type="number" id="grenade_sp" min="0" max="200" value="0">
+                        </div>
+                        <div>
+                            <label for="super_sp">Super Stat Points:</label>
+                            <input type="number" id="super_sp" min="0" max="200" value="0">
+                        </div>
+                        <div>
+                            <label for="class_sp">Class Stat Points:</label>
+                            <input type="number" id="class_sp" min="0" max="200" value="0">
+                        </div>
+                        <div>
+                            <label for="weapons_sp">Weapons Stat Points:</label>
+                            <input type="number" id="weapons_sp" min="0" max="200" value="0">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Example Pieces Section (Initially hidden) -->
+                <div id="example_pieces_section" class="hidden">
+                    <div class="stat-card">
+                        <h2 class="text-2xl font-semibold">Generate Example Armor Pieces</h2>
+                        <p class="text-sm text-gray-400 mb-4">
+                            Select an archetype for each armor slot. Each piece will get 30 primary, 20 secondary, and 15-22 random points.
+                        </p>
+
+                        <div class="armor-slot-selection">
+                            <div>
+                                <label for="helmet_archetype">Helmet Archetype:</label>
+                                <select id="helmet_archetype">
+                                    <option value="">Select Archetype</option>
+                                    <option value="Brawler">Brawler (Melee, Health)</option>
+                                    <option value="Gunner">Gunner (Weapons, Grenade)</option>
+                                    <option value="Specialist">Specialist (Class, Weapons)</option>
+                                    <option value="Grenadier">Grenadier (Grenade, Super)</option>
+                                    <option value="Paragon">Paragon (Super, Melee)</option>
+                                    <option value="Bulwark">Bulwark (Health, Class)</option>
+                                </select>
+                                <div class="selected-helmet-stats text-sm text-gray-400 mb-2">No archetype selected.</div>
+                            </div>
+                            <div>
+                                <label for="arms_archetype">Arms Archetype:</label>
+                                <select id="arms_archetype">
+                                    <option value="">Select Archetype</option>
+                                    <option value="Brawler">Brawler (Melee, Health)</option>
+                                    <option value="Gunner">Gunner (Weapons, Grenade)</option>
+                                    <option value="Specialist">Specialist (Class, Weapons)</option>
+                                    <option value="Grenadier">Grenadier (Grenade, Super)</option>
+                                    <option value="Paragon">Paragon (Super, Melee)</option>
+                                    <option value="Bulwark">Bulwark (Health, Class)</option>
+                                </select>
+                                <div class="selected-arms-stats text-sm text-gray-400 mb-2">No archetype selected.</div>
+                            </div>
+                            <div>
+                                <label for="chest_archetype">Chest Archetype:</label>
+                                <select id="chest_archetype">
+                                    <option value="">Select Archetype</option>
+                                    <option value="Brawler">Brawler (Melee, Health)</option>
+                                    <option value="Gunner">Gunner (Weapons, Grenade)</option>
+                                    <option value="Specialist">Specialist (Class, Weapons)</option>
+                                    <option value="Grenadier">Grenadier (Grenade, Super)</option>
+                                    <option value="Paragon">Paragon (Super, Melee)</option>
+                                    <option value="Bulwark">Bulwark (Health, Class)</option>
+                                </select>
+                                <div class="selected-chest-stats text-sm text-gray-400 mb-2">No archetype selected.</div>
+                            </div>
+                            <div>
+                                <label for="legs_archetype">Legs Archetype:</label>
+                                <select id="legs_archetype">
+                                    <option value="">Select Archetype</option>
+                                    <option value="Brawler">Brawler (Melee, Health)</option>
+                                    <option value="Gunner">Gunner (Weapons, Grenade)</option>
+                                    <option value="Specialist">Specialist (Class, Weapons)</option>
+                                    <option value="Grenadier">Grenadier (Grenade, Super)</option>
+                                    <option value="Paragon">Paragon (Super, Melee)</option>
+                                    <option value="Bulwark">Bulwark (Health, Class)</option>
+                                </select>
+                                <div class="selected-legs-stats text-sm text-gray-400 mb-2">No archetype selected.</div>
+                            </div>
+                            <div>
+                                <label for="class_item_archetype">Class Item Archetype:</label>
+                                <select id="class_item_archetype">
+                                    <option value="">Select Archetype</option>
+                                    <option value="Brawler">Brawler (Melee, Health)</option>
+                                    <option value="Gunner">Gunner (Weapons, Grenade)</option>
+                                    <option value="Specialist">Specialist (Class, Weapons)</option>
+                                    <option value="Grenadier">Grenadier (Grenade, Super)</option>
+                                    <option value="Paragon">Paragon (Super, Melee)</option>
+                                    <option value="Bulwark">Bulwark (Health, Class)</option>
+                                </select>
+                                <div class="selected-class_item-stats text-sm text-gray-400 mb-2">No archetype selected.</div>
+                            </div>
+                        </div>
+                        <button id="generate_archetype_stats_btn" class="btn w-full mt-4">Generate & Apply Archetype Stats</button>
+                    </div>
+                </div>
+
+                <!-- Custom Pieces Section (Initially hidden) -->
+                <div id="custom_pieces_section" class="hidden">
+                    <h2 class="text-2xl font-semibold text-blue-400 mb-4">Customize Individual Armor Pieces</h2>
+                    <p class="text-sm text-gray-400 mb-4">
+                        Select an archetype for each piece, then adjust primary, secondary, and one additional stat using sliders.
+                    </p>
+
+                    <div id="custom_armor_slots_container">
+                        <!-- Helmet -->
+                        <div class="stat-card">
+                            <h3 class="text-xl font-semibold text-blue-300 mb-2">Custom Helmet</h3>
+                            <label for="custom_helmet_archetype">Helmet Archetype:</label>
+                            <select id="custom_helmet_archetype">
+                                <option value="">Select Archetype</option>
+                                <option value="Brawler">Brawler (Melee, Health)</option>
+                                <option value="Gunner">Gunner (Weapons, Grenade)</option>
+                                <option value="Specialist">Specialist (Class, Weapons)</option>
+                                <option value="Grenadier">Grenadier (Grenade, Super)</option>
+                                <option value="Paragon">Paragon (Super, Melee)</option>
+                                <option value="Bulwark">Bulwark (Health, Class)</option>
+                            </select>
+                            <div id="custom_helmet_sliders_container" class="mt-4">
+                                <!-- Sliders will be dynamically inserted here -->
+                            </div>
+                            <div id="custom_helmet_stats_display" class="custom-piece-stats text-sm text-gray-400 mt-2">Current Helmet Stats: Health: 0, Melee: 0, Grenade: 0, Super: 0, Class: 0, Weapons: 0</div>
+                        </div>
+
+                        <!-- Arms -->
+                        <div class="stat-card">
+                            <h3 class="text-xl font-semibold text-blue-300 mb-2">Custom Arms</h3>
+                            <label for="custom_arms_archetype">Arms Archetype:</label>
+                            <select id="custom_arms_archetype">
+                                <option value="">Select Archetype</option>
+                                <option value="Brawler">Brawler (Melee, Health)</option>
+                                <option value="Gunner">Gunner (Weapons, Grenade)</option>
+                                <option value="Specialist">Specialist (Class, Weapons)</option>
+                                <option value="Grenadier">Grenadier (Grenade, Super)</option>
+                                <option value="Paragon">Paragon (Super, Melee)</option>
+                                <option value="Bulwark">Bulwark (Health, Class)</option>
+                            </select>
+                            <div id="custom_arms_sliders_container" class="mt-4">
+                                <!-- Sliders will be dynamically inserted here -->
+                            </div>
+                            <div id="custom_arms_stats_display" class="custom-piece-stats text-sm text-gray-400 mt-2">Current Arms Stats: Health: 0, Melee: 0, Grenade: 0, Super: 0, Class: 0, Weapons: 0</div>
+                        </div>
+
+                        <!-- Chest -->
+                        <div class="stat-card">
+                            <h3 class="text-xl font-semibold text-blue-300 mb-2">Custom Chest</h3>
+                            <label for="custom_chest_archetype">Chest Archetype:</label>
+                            <select id="custom_chest_archetype">
+                                <option value="">Select Archetype</option>
+                                <option value="Brawler">Brawler (Melee, Health)</option>
+                                <option value="Gunner">Gunner (Weapons, Grenade)</option>
+                                <option value="Specialist">Specialist (Class, Weapons)</option>
+                                <option value="Grenadier">Grenadier (Grenade, Super)</option>
+                                <option value="Paragon">Paragon (Super, Melee)</option>
+                                <option value="Bulwark">Bulwark (Health, Class)</option>
+                            </select>
+                            <div id="custom_chest_sliders_container" class="mt-4">
+                                <!-- Sliders will be dynamically inserted here -->
+                            </div>
+                            <div id="custom_chest_stats_display" class="custom-piece-stats text-sm text-gray-400 mt-2">Current Chest Stats: Health: 0, Melee: 0, Grenade: 0, Super: 0, Class: 0, Weapons: 0</div>
+                        </div>
+
+                        <!-- Legs -->
+                        <div class="stat-card">
+                            <h3 class="text-xl font-semibold text-blue-300 mb-2">Custom Legs</h3>
+                            <label for="custom_legs_archetype">Legs Archetype:</label>
+                            <select id="custom_legs_archetype">
+                                <option value="">Select Archetype</option>
+                                <option value="Brawler">Brawler (Melee, Health)</option>
+                                <option value="Gunner">Gunner (Weapons, Grenade)</option>
+                                <option value="Specialist">Specialist (Class, Weapons)</option>
+                                <option value="Grenadier">Grenadier (Grenade, Super)</option>
+                                <option value="Paragon">Paragon (Super, Melee)</option>
+                                <option value="Bulwark">Bulwark (Health, Class)</option>
+                            </select>
+                            <div id="custom_legs_sliders_container" class="mt-4">
+                                <!-- Sliders will be dynamically inserted here -->
+                            </div>
+                            <div id="custom_legs_stats_display" class="custom-piece-stats text-sm text-gray-400 mt-2">Current Legs Stats: Health: 0, Melee: 0, Grenade: 0, Super: 0, Class: 0, Weapons: 0</div>
+                        </div>
+
+                        <!-- Class Item -->
+                        <div class="stat-card">
+                            <h3 class="text-xl font-semibold text-blue-300 mb-2">Custom Class Item</h3>
+                            <label for="custom_class_item_archetype">Class Item Archetype:</label>
+                            <select id="custom_class_item_archetype">
+                                <option value="">Select Archetype</option>
+                                <option value="Brawler">Brawler (Melee, Health)</option>
+                                <option value="Gunner">Gunner (Weapons, Grenade)</option>
+                                <option value="Specialist">Specialist (Class, Weapons)</option>
+                                <option value="Grenadier">Grenadier (Grenade, Super)</option>
+                                <option value="Paragon">Paragon (Super, Melee)</option>
+                                <option value="Bulwark">Bulwark (Health, Class)</option>
+                            </select>
+                            <div id="custom_class_item_sliders_container" class="mt-4">
+                                <!-- Sliders will be dynamically inserted here -->
+                            </div>
+                            <div id="custom_class_item_stats_display" class="custom-piece-stats text-sm text-gray-400 mt-2">Current Class Item Stats: Health: 0, Melee: 0, Grenade: 0, Super: 0, Class: 0, Weapons: 0</div>
+                        </div>
+                    </div>
+                    <button id="apply_custom_stats_btn" class="btn w-full mt-4">Apply Custom Stats to Overview</button>
+                </div>
+            </div>
+
+            <!-- Right Column: Current Stat Overview -->
+            <div class="stat-card">
+                <h2 class="text-2xl font-semibold">Current Stat Overview</h2>
+                <div class="text-lg space-y-2">
+                    <div class="flex justify-between items-center benefit-item">
+                        <span class="benefit-name">Health:</span>
+                        <span class="benefit-value"><span id="overview_health_sp">0</span></span>
+                    </div>
+                    <div class="flex justify-between items-center benefit-item">
+                        <span class="benefit-name">Melee:</span>
+                        <span class="benefit-value"><span id="overview_melee_sp">0</span></span>
+                    </div>
+                    <div class="flex justify-between items-center benefit-item">
+                        <span class="benefit-name">Grenade:</span>
+                        <span class="benefit-value"><span id="overview_grenade_sp">0</span></span>
+                    </div>
+                    <div class="flex justify-between items-center benefit-item">
+                        <span class="benefit-name">Super:</span>
+                        <span class="benefit-value"><span id="overview_super_sp">0</span></span>
+                    </div>
+                    <div class="flex justify-between items-center benefit-item">
+                        <span class="benefit-name">Class:</span>
+                        <span class="benefit-value"><span id="overview_class_sp">0</span></span>
+                    </div>
+                    <div class="flex justify-between items-center benefit-item">
+                        <span class="benefit-name">Weapons:</span>
+                        <span class="benefit-value"><span id="overview_weapons_sp">0</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Results Section - Arranged in a 3x2 grid as requested -->
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+            <!-- Row 1: Health, Melee, Grenade Benefits -->
+            <div class="stat-card">
+                <h2 class="text-xl font-semibold">Health Benefits</h2>
+                <div id="health_benefits_list">
+                    <div class="benefit-item" data-benefit-key="health_orb">
+                        <span class="benefit-name">Health Per Orb:</span>
+                        <span class="benefit-value"><span id="health_orb">0</span></span>
+                    </div>
+                    <div class="benefit-item" data-benefit-key="health_flinch">
+                        <span class="benefit-name">Flinch Resistance:</span>
+                        <span class="benefit-value"><span id="health_flinch">0</span></span>
+                    </div>
+                    <div class="benefit-item" data-benefit-key="health_shield_recharge">
+                        <span class="benefit-name">Shield Recharge Rate:</span>
+                        <span class="benefit-value"><span id="health_shield_recharge">0</span></span>
+                    </div>
+                    <div class="benefit-item" data-benefit-key="health_shield_health">
+                        <span class="benefit-name">Shield Health:</span>
+                        <span class="benefit-value"><span id="health_shield_health">0</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <h2 class="text-xl font-semibold">Melee Benefits</h2>
+                <div id="melee_benefits_list">
+                    <div class="benefit-item" data-benefit-key="melee_cooldown">
+                        <span class="benefit-name">Cooldown:</span>
+                        <span class="benefit-value"><span id="melee_cooldown">0</span></span>
+                    </div>
+                    <div class="benefit-item" data-benefit-key="melee_energy">
+                        <span class="benefit-name">Energy Gained:</span>
+                        <span class="benefit-value"><span id="melee_energy">0</span></span>
+                    </div>
+                    <div class="benefit-item" data-benefit-key="melee_dmg_pve">
+                        <span class="benefit-name">Damage Increase PvE:</span>
+                        <span class="benefit-value"><span id="melee_dmg_pve">0</span></span>
+                    </div>
+                    <div class="benefit-item" data-benefit-key="melee_dmg_pvp">
+                        <span class="benefit-name">Damage Increase PvP:</span>
+                        <span class="benefit-value"><span id="melee_dmg_pvp">0</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <h2 class="text-xl font-semibold">Grenade Benefits</h2>
+                <div id="grenade_benefits_list">
+                    <div class="benefit-item" data-benefit-key="grenade_cooldown">
+                        <span class="benefit-name">Cooldown:</span>
+                        <span class="benefit-value"><span id="grenade_cooldown">0</span></span>
+                    </div>
+                    <div class="benefit-item" data-benefit-key="grenade_energy">
+                        <span class="benefit-name">Energy Gained:</span>
+                        <span class="benefit-value"><span id="grenade_energy">0</span></span>
+                    </div>
+                    <div class="benefit-item" data-benefit-key="grenade_dmg_pve">
+                        <span class="benefit-name">Damage Increase PvE:</span>
+                        <span class="benefit-value"><span id="grenade_dmg_pve">0</span></span>
+                    </div>
+                    <div class="benefit-item" data-benefit-key="grenade_dmg_pvp">
+                        <span class="benefit-name">Damage Increase PvP:</span>
+                        <span class="benefit-value"><span id="grenade_dmg_pvp">0</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 2: Super, Class, Weapons Benefits -->
+            <div class="stat-card">
+                <h2 class="text-xl font-semibold">Super Benefits</h2>
+                <div id="super_benefits_list">
+                    <div class="benefit-item" data-benefit-key="super_energy">
+                        <span class="benefit-name">Energy Gained:</span>
+                        <span class="benefit-value"><span id="super_energy">0</span></span>
+                    </div>
+                    <div class="benefit-item" data-benefit-key="super_dmg_pve">
+                        <span class="benefit-name">Damage Increase PvE:</span>
+                        <span class="benefit-value"><span id="super_dmg_pve">0</span></span>
+                    </div>
+                    <div class="benefit-item" data-benefit-key="super_dmg_pvp">
+                        <span class="benefit-name">Damage Increase PvP:</span>
+                        <span class="benefit-value"><span id="super_dmg_pvp">0</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <h2 class="text-xl font-semibold">Class Benefits</h2>
+                <div id="class_benefits_list">
+                    <div class="benefit-item" data-benefit-key="class_cooldown">
+                        <span class="benefit-name">Cooldown:</span>
+                        <span class="benefit-value"><span id="class_cooldown">0</span></span>
+                    </div>
+                    <div class="benefit-item" data-benefit-key="class_energy">
+                        <span class="benefit-name">Energy Gained:</span>
+                        <span class="benefit-value"><span id="class_energy">0</span></span>
+                    </div>
+                    <div class="benefit-item" data-benefit-key="class_overshield">
+                        <span class="benefit-name">Overshield Health:</span>
+                        <span class="benefit-value"><span id="class_overshield">0</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <h2 class="text-xl font-semibold">Weapons Benefits</h2>
+                <div id="weapons_benefits_list">
+                    <div class="benefit-item" data-benefit-key="weapons_reload">
+                        <span class="benefit-name">Reload & Handling:</span>
+                        <span class="benefit-value"><span id="weapons_reload">0</span></span>
+                    </div>
+                    <div class="benefit-item" data-benefit-key="weapons_minor_major_dmg">
+                        <span class="benefit-name">Minor/Major Dmg:</span>
+                        <span class="benefit-value"><span id="weapons_minor_major_dmg">0</span></span>
+                    </div>
+                    <div class="benefit-item" data-benefit-key="weapons_ammo_chance">
+                        <span class="benefit-name">Add. Ammo Chance:</span>
+                        <span class="benefit-value"><span id="weapons_ammo_chance">0</span></span>
+                    </div>
+                    <div class="benefit-item" data-benefit-key="weapons_ps_boss_dmg">
+                        <span class="benefit-name">Pri/Spc Boss Dmg:</span>
+                        <span class="benefit-value"><span id="weapons_ps_boss_dmg">0</span></span>
+                    </div>
+                    <div class="benefit-item" data-benefit-key="weapons_ps_guardian_dmg">
+                        <span class="benefit-name">Pri/Spc Guardian Dmg:</span>
+                        <span class="benefit-value"><span id="weapons_ps_guardian_dmg">0</span></span>
+                    </div>
+                    <div class="benefit-item" data-benefit-key="weapons_heavy_boss_dmg">
+                        <span class="benefit-name">Heavy Boss Dmg:</span>
+                        <span class="benefit-value"><span id="weapons_heavy_boss_dmg">0</span></span>
+                    </div>
+                    <div class="benefit-item" data-benefit-key="weapons_heavy_guardian_dmg">
+                        <span class="benefit-name">Heavy Guardian Dmg:</span>
+                        <span class="benefit-value"><span id="weapons_heavy_guardian_dmg">0</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Helper Functions ---
+        function sanitizeStatPoints(value) {
+            let val = parseInt(value) || 0;
+            return Math.max(0, Math.min(200, val));
+        }
+
+        function formatValue(value, decimalPlaces = 1) {
+            let numValue = parseFloat(value);
+            if (isNaN(numValue)) numValue = 0;
+            if (Math.abs(numValue) < 0.00001) numValue = 0;
+
+            if (decimalPlaces === 0 || Math.abs(numValue - Math.round(numValue)) < 0.0001) {
+                return Math.round(numValue).toString();
+            }
+            const factor = Math.pow(10, decimalPlaces);
+            let roundedValue = Math.round(numValue * factor) / factor;
+            return roundedValue.toFixed(decimalPlaces);
+        }
+
+        // --- Calculation Functions ---
+        function calculateSharedCooldown(sp) {
+            sp = sanitizeStatPoints(sp);
+            if (sp <= 50) return sp * (-35 / 50);
+            if (sp < 100) return -35 + (sp - 50) * ((-65 - (-35)) / (100 - 50));
+            return -65;
+        }
+        function calculateStandardEnergyGained(sp) {
+            sp = sanitizeStatPoints(sp);
+            if (sp === 0) return 0;
+            if (sp <= 11) return sp * (3 / 11);
+            if (sp <= 26) return 3 + (sp - 11) * ((16 - 3) / (26 - 11));
+            if (sp <= 45) return 16 + (sp - 26) * ((46 - 16) / (45 - 26));
+            if (sp < 50) return 46 + (sp - 45) * ((56 - 46) / (50 - 45));
+            if (sp < 100) return 56 + (sp - 50) * ((190 - 56) / (100 - 50));
+            return 190;
+        }
+        function calculateMeleeEnergyGained(sp) {
+            sp = sanitizeStatPoints(sp);
+            if (sp === 0) return 0;
+            if (sp <= 22) { // New segment for melee energy from 0 to 22 points
+                const slope = (11 - 0) / (22 - 0); // 11 / 22 = 0.5
+                return sp * slope;
+            }
+            if (sp <= 26) { // New segment for melee energy from 22 to 26 points
+                const slope = (16 - 11) / (26 - 22); // 5 / 4 = 1.25
+                return 11 + slope * (sp - 22);
+            }
+            if (sp <= 45) return 16 + (sp - 26) * ((46-16)/(45-26));
+            if (sp < 50) return 46 + (sp - 45) * ((56-46)/(50-45));
+            if (sp < 100) return 56 + (sp - 50) * ((190-56)/(100-50));
+            return 190;
+        }
+
+        function calculateClassOvershieldHealth(sp) {
+            sp = sanitizeStatPoints(sp);
+            if (sp < 100) return 0;
+            if (sp <= 150) {
+                // Linear interpolation from (100, 0) to (150, 19.8)
+                const slope = (19.8 - 0) / (150 - 100);
+                return 0 + slope * (sp - 100);
+            }
+            if (sp < 200) {
+                // Linear interpolation from (150, 19.8) to (200, 40)
+                const slope = (40 - 19.8) / (200 - 150);
+                return 19.8 + slope * (sp - 150);
+            }
+            return 40;
+        }
+
+        function calculateShieldRechargeRate(sp) {
+            sp = sanitizeStatPoints(sp);
+            if (sp < 100) return 0;
+            if (sp <= 105) {
+                // From (100, 0) to (105, 2.9)
+                const slope = (2.9 - 0) / (105 - 100); // 2.9 / 5 = 0.58
+                return 0 + slope * (sp - 100);
+            }
+            if (sp <= 150) {
+                // From (105, 2.9) to (150, 31.6)
+                const slope = (31.6 - 2.9) / (150 - 105); // 28.7 / 45 approx 0.63777777
+                return 2.9 + slope * (sp - 105);
+            }
+            if (sp < 200) {
+                // From (150, 31.6) to (200, 45)
+                const slope = (45 - 31.6) / (200 - 150); // 13.4 / 50 = 0.268
+                return 31.6 + slope * (sp - 150);
+            }
+            return 45; // Capped at 200 points
+        }
+
+        function calculateShieldHealth(sp) {
+            sp = sanitizeStatPoints(sp);
+            if (sp < 100) return 0;
+            if (sp <= 105) {
+                // From (100, 0) to (105, 1)
+                const slope = (1 - 0) / (105 - 100); // 1 / 5 = 0.2
+                return 0 + slope * (sp - 100);
+            }
+            if (sp <= 150) {
+                // From (105, 1) to (150, 15)
+                const slope = (15 - 1) / (150 - 105); // 14 / 45 approx 0.31111111
+                return 1 + slope * (sp - 105);
+            }
+            if (sp < 200) {
+                // From (150, 15) to (200, 20)
+                const slope = (20 - 15) / (200 - 150); // 5 / 50 = 0.1
+                return 15 + slope * (sp - 150);
+            }
+            return 20; // Capped at 200 points
+        }
+
+        function calculateHealthPerOrb(sp) {
+            sp = sanitizeStatPoints(sp);
+            if (sp >= 100) return 70;
+            return sp * 0.7;
+        }
+        function calculateFlinchResistance(sp) {
+            sp = sanitizeStatPoints(sp);
+            if (sp >= 100) return 10;
+            return sp * 0.1;
+        }
+        function calculateWeaponReloadHandling(sp) {
+            sp = sanitizeStatPoints(sp);
+            if (sp >= 100) return 10;
+            return sp * 0.1;
+        }
+        function calculateWeaponMinorMajorDmg(sp) {
+            sp = sanitizeStatPoints(sp);
+            if (sp >= 100) return 15;
+            return sp * 0.15;
+        }
+
+        // Updated calculateWeaponAmmoChance function
+        function calculateWeaponAmmoChance(sp) {
+            sp = sanitizeStatPoints(sp);
+            if (sp < 100) return 0;
+            if (sp <= 150) {
+                // Linear interpolation from (100, 0) to (150, 49)
+                const slope = (49 - 0) / (150 - 100);
+                return 0 + slope * (sp - 100);
+            }
+            if (sp < 200) {
+                // Linear interpolation from (150, 49) to (200, 100)
+                const slope = (100 - 49) / (200 - 150);
+                return 49 + slope * (sp - 150);
+            }
+            return 100;
+        }
+
+        // Updated calculateWeaponPSBossDmg function
+        function calculateWeaponPSBossDmg(sp) {
+            sp = sanitizeStatPoints(sp);
+            if (sp < 100) return 0;
+            if (sp <= 150) {
+                // Linear interpolation from (100, 0) to (150, 7.4)
+                const slope = (7.4 - 0) / (150 - 100);
+                return 0 + slope * (sp - 100);
+            }
+            if (sp < 200) {
+                // Linear interpolation from (150, 7.4) to (200, 15)
+                const slope = (15 - 7.4) / (200 - 150);
+                return 7.4 + slope * (sp - 150);
+            }
+            return 15;
+        }
+
+        // Updated calculateWeaponPSGuardianDmg function
+        function calculateWeaponPSGuardianDmg(sp) {
+            sp = sanitizeStatPoints(sp);
+            if (sp < 100) return 0;
+            if (sp <= 150) {
+                // Linear interpolation from (100, 0) to (150, 3)
+                const slope = (3 - 0) / (150 - 100);
+                return 0 + slope * (sp - 100);
+            }
+            if (sp < 200) {
+                // Linear interpolation from (150, 3) to (200, 6)
+                const slope = (6 - 3) / (200 - 150);
+                return 3 + slope * (sp - 150);
+            }
+            return 6;
+        }
+
+        // Updated calculateWeaponHeavyBossDmg function
+        function calculateWeaponHeavyBossDmg(sp) {
+            sp = sanitizeStatPoints(sp);
+            if (sp < 100) return 0;
+            if (sp <= 150) {
+                // Linear interpolation from (100, 0) to (150, 4.9)
+                const slope = (4.9 - 0) / (150 - 100);
+                return 0 + slope * (sp - 100);
+            }
+            if (sp < 200) {
+                // Linear interpolation from (150, 4.9) to (200, 10)
+                const slope = (10 - 4.9) / (200 - 150);
+                return 4.9 + slope * (sp - 150);
+            }
+            return 10;
+        }
+
+        // Updated calculateWeaponHeavyGuardianDmg function
+        function calculateWeaponHeavyGuardianDmg(sp) {
+            sp = sanitizeStatPoints(sp);
+            if (sp < 100) return 0;
+            if (sp <= 150) {
+                // Linear interpolation from (100, 0) to (150, 3)
+                const slope = (3 - 0) / (150 - 100);
+                return 0 + slope * (sp - 100);
+            }
+            if (sp < 200) {
+                // Linear interpolation from (150, 3) to (200, 6)
+                const slope = (6 - 3) / (200 - 150);
+                return 3 + slope * (sp - 150);
+            }
+            return 6;
+        }
+
+        function calculateMeleeDmgPvE(sp) {
+            sp = sanitizeStatPoints(sp);
+            if (sp < 100) return 0;
+            if (sp <= 150) {
+                // Linear interpolation from (100, 0) to (150, 15)
+                const slope = (15 - 0) / (150 - 100); // 15 / 50 = 0.3
+                return 0 + slope * (sp - 100);
+            }
+            if (sp < 200) {
+                // Linear interpolation from (150, 15) to (200, 30)
+                const slope = (30 - 15) / (200 - 150); // 15 / 50 = 0.3
+                return 15 + slope * (sp - 150);
+            }
+            return 30; // Capped at 200 points
+        }
+
+        function calculateMeleeDmgPvP(sp) {
+            sp = sanitizeStatPoints(sp);
+            if (sp < 100) return 0;
+            if (sp <= 150) {
+                // Linear interpolation from (100, 0) to (150, 10)
+                const slope = (10 - 0) / (150 - 100); // 10 / 50 = 0.2
+                return 0 + slope * (sp - 100);
+            }
+            if (sp < 200) {
+                // Linear interpolation from (150, 10) to (200, 20)
+                const slope = (20 - 10) / (200 - 150); // 10 / 50 = 0.2
+                return 10 + slope * (sp - 150);
+            }
+            return 20; // Capped at 200 points
+        }
+
+        function calculateGrenadeDmgPvE(sp) {
+            sp = sanitizeStatPoints(sp);
+            if (sp < 100) return 0;
+            if (sp <= 150) {
+                // Linear interpolation from (100, 0) to (150, 32.3)
+                const slope = (32.3 - 0) / (150 - 100); // 32.3 / 50 = 0.646
+                return 0 + slope * (sp - 100);
+            }
+            if (sp < 200) {
+                // Linear interpolation from (150, 32.3) to (200, 65)
+                const slope = (65 - 32.3) / (200 - 150); // 32.7 / 50 = 0.654
+                return 32.3 + slope * (sp - 150);
+            }
+            return 65; // Capped at 200 points
+        }
+
+        function calculateGrenadeDmgPvP(sp) {
+            sp = sanitizeStatPoints(sp);
+            if (sp < 100) return 0;
+            if (sp <= 150) {
+                // Linear interpolation from (100, 0) to (150, 9.9)
+                const slope = (9.9 - 0) / (150 - 100); // 9.9 / 50 = 0.198
+                return 0 + slope * (sp - 100);
+            }
+            if (sp < 200) {
+                // Linear interpolation from (150, 9.9) to (200, 20)
+                const slope = (20 - 9.9) / (200 - 150); // 10.1 / 50 = 0.202
+                return 9.9 + slope * (sp - 150);
+            }
+            return 20; // Capped at 200 points
+        }
+
+        function calculateSuperDmgPvE(sp) {
+            sp = sanitizeStatPoints(sp);
+            if (sp < 100) return 0;
+            if (sp <= 150) {
+                // Linear interpolation from (100, 0) to (150, 22.3)
+                const slope = (22.3 - 0) / (150 - 100);
+                return 0 + slope * (sp - 100);
+            }
+            if (sp < 200) {
+                // Linear interpolation from (150, 22.3) to (200, 45)
+                const slope = (45 - 22.3) / (200 - 150);
+                return 22.3 + slope * (sp - 150);
+            }
+            return 45;
+        }
+
+        function calculateSuperDmgPvP(sp) {
+            sp = sanitizeStatPoints(sp);
+            if (sp < 100) return 0;
+            if (sp <= 150) {
+                // Linear interpolation from (100, 0) to (150, 7.4)
+                const slope = (7.4 - 0) / (150 - 100);
+                return 0 + slope * (sp - 100);
+            }
+            if (sp < 200) {
+                // Linear interpolation from (150, 7.4) to (200, 15)
+                const slope = (15 - 7.4) / (200 - 150);
+                return 7.4 + slope * (sp - 150);
+            }
+            return 15;
+        }
+
+        // --- Benefit Definitions ---
+        const benefitDefinitions = {
+            class: [
+                { key: 'class_cooldown', name: 'Cooldown', calculate: calculateSharedCooldown, threshold: 50, decimals: 1, unit: '%' },
+                { key: 'class_energy', name: 'Energy Gained', calculate: calculateStandardEnergyGained, threshold: null, decimals: 0, unit: '%' },
+                { key: 'class_overshield', name: 'Overshield Health', calculate: calculateClassOvershieldHealth, threshold: 100, decimals: 1, unit: '' }
+            ],
+            health: [
+                { key: 'health_orb', name: 'Health Per Orb', calculate: calculateHealthPerOrb, threshold: null, decimals: 1, unit: '' },
+                { key: 'health_flinch', name: 'Flinch Resistance', calculate: calculateFlinchResistance, threshold: null, decimals: 1, unit: '%' },
+                { key: 'health_shield_recharge', name: 'Shield Recharge Rate', calculate: calculateShieldRechargeRate, threshold: 100, decimals: 1, unit: '%' },
+                { key: 'health_shield_health', calculate: calculateShieldHealth, threshold: 100, decimals: 0, unit: '' }
+            ],
+            weapons: [
+                { key: 'weapons_reload', name: 'Reload & Handling', calculate: calculateWeaponReloadHandling, threshold: null, decimals: 1, unit: '%' },
+                { key: 'weapons_minor_major_dmg', name: 'Minor/Major Dmg', calculate: calculateWeaponMinorMajorDmg, threshold: null, decimals: 1, unit: '%' },
+                { key: 'weapons_ammo_chance', calculate: calculateWeaponAmmoChance, threshold: 100, decimals: 0, unit: '%' },
+                { key: 'weapons_ps_boss_dmg', name: 'Pri/Spc Boss Dmg', calculate: calculateWeaponPSBossDmg, threshold: 100, decimals: 1, unit: '%' },
+                { key: 'weapons_ps_guardian_dmg', name: 'Pri/Spc Guardian Dmg', calculate: calculateWeaponPSGuardianDmg, threshold: 100, decimals: 1, unit: '%' },
+                { key: 'weapons_heavy_boss_dmg', name: 'Heavy Boss Dmg', calculate: calculateWeaponHeavyBossDmg, threshold: 100, decimals: 1, unit: '%' },
+                { key: 'weapons_heavy_guardian_dmg', name: 'Heavy Guardian Dmg', calculate: calculateWeaponHeavyGuardianDmg, threshold: 100, decimals: 1, unit: '%' }
+            ],
+            melee: [
+                { key: 'melee_cooldown', name: 'Cooldown', calculate: calculateSharedCooldown, threshold: 50, decimals: 1, unit: '%' },
+                { key: 'melee_energy', name: 'Energy Gained', calculate: calculateMeleeEnergyGained, threshold: null, decimals: 0, unit: '%' },
+                { key: 'melee_dmg_pve', name: 'Damage Increase PvE', calculate: calculateMeleeDmgPvE, threshold: 100, decimals: 0, unit: '%' },
+                { key: 'melee_dmg_pvp', name: 'Damage Increase PvP', calculate: calculateMeleeDmgPvP, threshold: 100, decimals: 0, unit: '%' }
+            ],
+            grenade: [
+                { key: 'grenade_cooldown', name: 'Cooldown', calculate: calculateSharedCooldown, threshold: 50, decimals: 1, unit: '%' },
+                { key: 'grenade_energy', name: 'Energy Gained', calculate: calculateStandardEnergyGained, threshold: null, decimals: 0, unit: '%' },
+                { key: 'grenade_dmg_pve', name: 'Damage Increase PvE', calculate: calculateGrenadeDmgPvE, threshold: 100, decimals: 1, unit: '%' },
+                { key: 'grenade_dmg_pvp', name: 'Damage Increase PvP', calculate: calculateGrenadeDmgPvP, threshold: 100, decimals: 1, unit: '%' }
+            ],
+            super: [
+                { key: 'super_energy', name: 'Energy Gained', calculate: calculateStandardEnergyGained, threshold: null, decimals: 0, unit: '%' },
+                { key: 'super_dmg_pve', name: 'Damage Increase PvE', calculate: calculateSuperDmgPvE, threshold: 100, decimals: 1, unit: '%' },
+                { key: 'super_dmg_pvp', name: 'Damage Increase PvP', calculate: calculateSuperDmgPvP, threshold: 100, decimals: 1, unit: '%' }
+            ]
+        };
+
+        // Archetype definitions based on the provided image
+        const archetypeStats = {
+            Brawler: { primary: 'melee', secondary: 'health', primaryPoints: 30, secondaryPoints: 20 },
+            Gunner: { primary: 'weapons', secondary: 'grenade', primaryPoints: 30, secondaryPoints: 20 },
+            Specialist: { primary: 'class', secondary: 'weapons', primaryPoints: 30, secondaryPoints: 20 },
+            Grenadier: { primary: 'grenade', secondary: 'super', primaryPoints: 30, secondaryPoints: 20 },
+            Paragon: { primary: 'super', secondary: 'melee', primaryPoints: 30, secondaryPoints: 20 },
+            Bulwark: { primary: 'health', secondary: 'class', primaryPoints: 30, secondaryPoints: 20 }
+        };
+
+        const allStats = ['health', 'melee', 'grenade', 'super', 'class', 'weapons'];
+
+        /**
+         * Generates a random stat (name and points) that is not included in the excludedStats array.
+         * The points will be a random integer between 15 and 22.
+         * @param {Array<string>} excludedStats - An array of stat names to exclude from the random selection.
+         * @returns {{stat: string, points: number}|null} An object with the randomly selected stat name and points, or null if no stats are available.
+         */
+        function generateRandomStat(excludedStats) {
+            let availableStats = allStats.filter(stat => !excludedStats.includes(stat));
+            if (availableStats.length === 0) {
+                console.warn("No available stats to pick a random one from, after excluding primary/secondary.");
+                return null;
+            }
+
+            const randomStatIndex = Math.floor(Math.random() * availableStats.length);
+            const randomStatName = availableStats[randomStatIndex];
+            const randomPoints = Math.floor(Math.random() * (22 - 15 + 1)) + 15; // Random between 15 and 22
+            return { stat: randomStatName, points: randomPoints };
+        }
+
+        /**
+         * Calculates the stats for a single armor piece based on its selected archetype.
+         * Includes primary, secondary, and one random tertiary stat.
+         * @param {string} archetype - The name of the selected archetype (e.g., 'Brawler').
+         * @returns {{pieceStats: Object, primaryStatName: string, secondaryStatName: string, randomStatName: string|null}}
+         * An object containing the stat points for the armor piece, and the names of the primary, secondary, and random stats for ordered display.
+         */
+        function calculateArchetypePieceStats(archetype) {
+            if (!archetype || !archetypeStats[archetype]) {
+                return {
+                    pieceStats: { health: 0, melee: 0, grenade: 0, super: 0, class: 0, weapons: 0 },
+                    primaryStatName: '', secondaryStatName: '', randomStatName: null
+                };
+            }
+
+            const { primary, secondary, primaryPoints, secondaryPoints } = archetypeStats[archetype];
+            let pieceStats = { health: 0, melee: 0, grenade: 0, super: 0, class: 0, weapons: 0 };
+
+            pieceStats[primary] += primaryPoints;
+            pieceStats[secondary] += secondaryPoints;
+
+            // Generate the third random stat, excluding primary and secondary
+            const excluded = [primary, secondary];
+            const randomRoll = generateRandomStat(excluded);
+            let randomStatName = null;
+            if (randomRoll) {
+                pieceStats[randomRoll.stat] += randomRoll.points;
+                randomStatName = randomRoll.stat;
+            }
+
+            return {
+                pieceStats: pieceStats,
+                primaryStatName: primary,
+                secondaryStatName: secondary,
+                randomStatName: randomStatName
+            };
+        }
+
+        // Global object to store custom armor piece values
+        const customArmorPieceValues = {
+            helmet: { health: 0, melee: 0, grenade: 0, super: 0, class: 0, weapons: 0, tertiaryStat: null },
+            arms: { health: 0, melee: 0, grenade: 0, super: 0, class: 0, weapons: 0, tertiaryStat: null },
+            chest: { health: 0, melee: 0, grenade: 0, super: 0, class: 0, weapons: 0, tertiaryStat: null },
+            legs: { health: 0, melee: 0, grenade: 0, super: 0, class: 0, weapons: 0, tertiaryStat: null },
+            class_item: { health: 0, melee: 0, grenade: 0, super: 0, class: 0, weapons: 0, tertiaryStat: null }
+        };
+
+        /**
+         * Renders the sliders and tertiary stat selection for a custom armor piece.
+         * @param {string} slot - The armor slot ('helmet', 'arms', etc.).
+         * @param {string} selectedArchetype - The archetype name.
+         */
+        function renderCustomPieceControls(slot, selectedArchetype) {
+            const container = document.getElementById(`custom_${slot}_sliders_container`);
+            container.innerHTML = ''; // Clear previous controls
+
+            const statsDisplay = document.getElementById(`custom_${slot}_stats_display`);
+
+            if (!selectedArchetype) {
+                // Reset this piece's stats if no archetype is selected
+                customArmorPieceValues[slot] = { health: 0, melee: 0, grenade: 0, super: 0, class: 0, weapons: 0, tertiaryStat: null };
+                statsDisplay.textContent = `Current ${slot.charAt(0).toUpperCase() + slot.slice(1)} Stats: Health: 0, Melee: 0, Grenade: 0, Super: 0, Class: 0, Weapons: 0`;
+                calculateAndApplyTotalCustomStats();
+                return;
+            }
+
+            const { primary, secondary } = archetypeStats[selectedArchetype];
+
+            // Initialize piece stats based on archetype defaults
+            customArmorPieceValues[slot] = { health: 0, melee: 0, grenade: 0, super: 0, class: 0, weapons: 0, tertiaryStat: null };
+            customArmorPieceValues[slot][primary] = 30;
+            customArmorPieceValues[slot][secondary] = 20;
+
+            // Function to create a slider group
+            const createSliderGroup = (statName, initialValue, min, max) => {
+                const div = document.createElement('div');
+                div.className = 'custom-slider-group';
+                div.innerHTML = `
+                    <label>
+                        ${statName.charAt(0).toUpperCase() + statName.slice(1)}:
+                        <span id="custom_${slot}_${statName}_value" class="slider-value">${initialValue}</span>
+                    </label>
+                    <div class="custom-slider-flex">
+                        <input type="range" id="custom_${slot}_${statName}_slider" min="${min}" max="${max}" value="${initialValue}">
+                    </div>
+                `;
+                const slider = div.querySelector(`#custom_${slot}_${statName}_slider`);
+                const valueSpan = div.querySelector(`#custom_${slot}_${statName}_value`);
+
+                slider.addEventListener('input', () => {
+                    valueSpan.textContent = slider.value;
+                    customArmorPieceValues[slot][statName] = parseInt(slider.value);
+                    updateSinglePieceStatsDisplay(slot);
+                    calculateAndApplyTotalCustomStats();
+                });
+                return div;
+            };
+
+            // Add primary stat slider
+            container.appendChild(createSliderGroup(primary, customArmorPieceValues[slot][primary], 0, 60));
+
+            // Add secondary stat slider
+            container.appendChild(createSliderGroup(secondary, customArmorPieceValues[slot][secondary], 0, 60));
+
+            // Add tertiary stat selection and slider
+            const tertiaryDiv = document.createElement('div');
+            tertiaryDiv.className = 'custom-slider-group';
+            tertiaryDiv.innerHTML = `
+                <label for="custom_${slot}_tertiary_select">Add. Stat:</label>
+                <select id="custom_${slot}_tertiary_select" class="mb-2">
+                    <option value="">Select Additional Stat</option>
+                    ${allStats.filter(s => s !== primary && s !== secondary).map(s => `<option value="${s}">${s.charAt(0).toUpperCase() + s.slice(1)}</option>`).join('')}
+                </select>
+                <div id="custom_${slot}_tertiary_slider_container">
+                    <!-- Tertiary slider inserted here based on selection -->
+                </div>
+            `;
+            container.appendChild(tertiaryDiv);
+
+            const tertiarySelect = tertiaryDiv.querySelector(`#custom_${slot}_tertiary_select`);
+            const tertiarySliderContainer = tertiaryDiv.querySelector(`#custom_${slot}_tertiary_slider_container`);
+
+            tertiarySelect.addEventListener('change', () => {
+                const selectedTertiaryStat = tertiarySelect.value;
+                customArmorPieceValues[slot].tertiaryStat = selectedTertiaryStat; // Store selected tertiary stat name
+
+                // Reset all other stats to 0 first, then set the chosen one.
+                allStats.forEach(s => {
+                    if (s !== primary && s !== secondary && s !== selectedTertiaryStat) {
+                        customArmorPieceValues[slot][s] = 0;
+                    }
+                });
+
+                tertiarySliderContainer.innerHTML = ''; // Clear previous tertiary slider
+
+                if (selectedTertiaryStat) {
+                    const tertiarySliderGroup = createSliderGroup(selectedTertiaryStat, 0, 0, 30); // Default to 0, range 0-30
+                    tertiarySliderContainer.appendChild(tertiarySliderGroup);
+                    // Manually set value and trigger change if there's a stored value for this tertiary stat
+                    if (customArmorPieceValues[slot][selectedTertiaryStat]) {
+                         tertiarySliderGroup.querySelector('input[type="range"]').value = customArmorPieceValues[slot][selectedTertiaryStat];
+                         tertiarySliderGroup.querySelector('.slider-value').textContent = customArmorPieceValues[slot][selectedTertiaryStat];
+                    }
+                }
+                updateSinglePieceStatsDisplay(slot);
+                calculateAndApplyTotalCustomStats();
+            });
+
+            // If an archetype is chosen and we return to this piece, try to restore its values
+            if (customArmorPieceValues[slot][primary]) {
+                document.getElementById(`custom_${slot}_${primary}_slider`).value = customArmorPieceValues[slot][primary];
+                document.getElementById(`custom_${slot}_${primary}_value`).textContent = customArmorPieceValues[slot][primary];
+            }
+            if (customArmorPieceValues[slot][secondary]) {
+                document.getElementById(`custom_${slot}_${secondary}_slider`).value = customArmorPieceValues[slot][secondary];
+                document.getElementById(`custom_${slot}_${secondary}_value`).textContent = customArmorPieceValues[slot][secondary];
+            }
+            if (customArmorPieceValues[slot].tertiaryStat) {
+                tertiarySelect.value = customArmorPieceValues[slot].tertiaryStat;
+                // Manually trigger change to render the tertiary slider if one was previously selected
+                const event = new Event('change');
+                tertiarySelect.dispatchEvent(event);
+            }
+
+            updateSinglePieceStatsDisplay(slot);
+            calculateAndApplyTotalCustomStats();
+        }
+
+        /**
+         * Updates the text display for a single armor piece's stats.
+         * @param {string} slot - The armor slot ('helmet', 'arms', etc.).
+         */
+        function updateSinglePieceStatsDisplay(slot) {
+            const statsDisplay = document.getElementById(`custom_${slot}_stats_display`);
+            const pieceStats = customArmorPieceValues[slot];
+            let statsTextParts = [];
+            allStats.forEach(stat => {
+                if (pieceStats[stat] > 0) {
+                    statsTextParts.push(`${stat.charAt(0).toUpperCase() + stat.slice(1)}: ${pieceStats[stat]}`);
+                }
+            });
+            if (statsTextParts.length === 0) {
+                statsDisplay.textContent = `Current ${slot.charAt(0).toUpperCase() + slot.slice(1)} Stats: None`;
+            } else {
+                statsDisplay.textContent = `Current ${slot.charAt(0).toUpperCase() + slot.slice(1)} Stats: ${statsTextParts.join(', ')}`;
+            }
+        }
+
+
+        /**
+         * Sums up all custom armor piece stats and applies them to the main input fields.
+         */
+        function calculateAndApplyTotalCustomStats() {
+            let totalCombinedStats = { health: 0, melee: 0, grenade: 0, super: 0, class: 0, weapons: 0 };
+
+            for (const slot in customArmorPieceValues) {
+                const piece = customArmorPieceValues[slot];
+                for (const stat in totalCombinedStats) { // Iterate over all possible stats
+                    if (piece[stat] !== undefined) { // Check if the stat exists in the piece object
+                        totalCombinedStats[stat] += piece[stat];
+                    }
+                }
+            }
+
+            // Update the main input fields
+            document.getElementById('health_sp').value = sanitizeStatPoints(totalCombinedStats.health);
+            document.getElementById('melee_sp').value = sanitizeStatPoints(totalCombinedStats.melee);
+            document.getElementById('grenade_sp').value = sanitizeStatPoints(totalCombinedStats.grenade);
+            document.getElementById('super_sp').value = sanitizeStatPoints(totalCombinedStats.super);
+            document.getElementById('class_sp').value = sanitizeStatPoints(totalCombinedStats.class);
+            document.getElementById('weapons_sp').value = sanitizeStatPoints(totalCombinedStats.weapons);
+
+            updateAllBenefits(); // Trigger the main benefit update
+        }
+
+
+        /**
+         * Generates stats for all selected archetype armor pieces (from Example Pieces section), sums them up,
+         * updates the manual input fields, and triggers the benefits recalculation.
+         */
+        function generateAndApplyArchetypeStats() {
+            let totalCombinedStats = { health: 0, melee: 0, grenade: 0, super: 0, class: 0, weapons: 0 };
+            const armorSlots = ['helmet', 'arms', 'chest', 'legs', 'class_item'];
+
+            // Clear custom pieces values when using example pieces
+            for (const slot in customArmorPieceValues) {
+                customArmorPieceValues[slot] = { health: 0, melee: 0, grenade: 0, super: 0, class: 0, weapons: 0, tertiaryStat: null };
+            }
+            // Clear custom piece UI
+            document.querySelectorAll('[id$="_sliders_container"]').forEach(container => container.innerHTML = '');
+            document.querySelectorAll('[id$="_stats_display"]').forEach(display => display.textContent = '');
+            document.querySelectorAll('[id^="custom_"][id$="_archetype"]').forEach(select => select.value = '');
+
+
+            armorSlots.forEach(slot => {
+                const archetypeSelect = document.getElementById(`${slot}_archetype`);
+                const selectedArchetype = archetypeSelect.value;
+                const statsDisplay = document.querySelector(`.selected-${slot}-stats`);
+
+                if (selectedArchetype) {
+                    const { pieceStats, primaryStatName, secondaryStatName, randomStatName } = calculateArchetypePieceStats(selectedArchetype);
+
+                    // Update total combined stats
+                    for (const stat in pieceStats) {
+                        totalCombinedStats[stat] += pieceStats[stat];
+                    }
+
+                    // Build stats text in the desired order
+                    let statsTextParts = [];
+                    if (pieceStats[primaryStatName] > 0) {
+                        statsTextParts.push(`${primaryStatName.charAt(0).toUpperCase() + primaryStatName.slice(1)}: ${pieceStats[primaryStatName]}`);
+                    }
+                    if (pieceStats[secondaryStatName] > 0) {
+                        statsTextParts.push(`${secondaryStatName.charAt(0).toUpperCase() + secondaryStatName.slice(1)}: ${pieceStats[secondaryStatName]}`);
+                    }
+                    if (randomStatName && pieceStats[randomStatName] > 0) {
+                        statsTextParts.push(`${randomStatName.charAt(0).toUpperCase() + randomStatName.slice(1)}: ${pieceStats[randomStatName]}`);
+                    }
+                    statsDisplay.textContent = `Stats: ${statsTextParts.join(', ')}`;
+
+                } else {
+                    statsDisplay.textContent = 'No archetype selected.';
+                }
+            });
+
+            // Update the input fields with the total combined stats
+            document.getElementById('health_sp').value = sanitizeStatPoints(totalCombinedStats.health);
+            document.getElementById('melee_sp').value = sanitizeStatPoints(totalCombinedStats.melee);
+            document.getElementById('grenade_sp').value = sanitizeStatPoints(totalCombinedStats.grenade);
+            document.getElementById('super_sp').value = sanitizeStatPoints(totalCombinedStats.super);
+            document.getElementById('class_sp').value = sanitizeStatPoints(totalCombinedStats.class);
+            document.getElementById('weapons_sp').value = sanitizeStatPoints(totalCombinedStats.weapons);
+
+            // Trigger update of benefits
+            updateAllBenefits();
+        }
+
+        // --- Main Calculation and UI Update ---
+        function updateAllBenefits() {
+            const rawClassSp = parseInt(document.getElementById('class_sp').value) || 0;
+            const rawHealthSp = parseInt(document.getElementById('health_sp').value) || 0;
+            const rawWeaponsSp = parseInt(document.getElementById('weapons_sp').value) || 0;
+            const rawMeleeSp = parseInt(document.getElementById('melee_sp').value) || 0;
+            const rawGrenadeSp = parseInt(document.getElementById('grenade_sp').value) || 0;
+            const rawSuperSp = parseInt(document.getElementById('super_sp').value) || 0;
+
+            const spValues = {
+                class: rawClassSp,
+                health: rawHealthSp,
+                weapons: rawWeaponsSp,
+                melee: rawMeleeSp,
+                grenade: rawGrenadeSp,
+                super: rawSuperSp
+            };
+
+            // Update the "Current Stat Overview" section
+            document.getElementById('overview_health_sp').textContent = rawHealthSp;
+            document.getElementById('overview_melee_sp').textContent = rawMeleeSp;
+            document.getElementById('overview_grenade_sp').textContent = rawGrenadeSp;
+            document.getElementById('overview_super_sp').textContent = rawSuperSp;
+            document.getElementById('overview_class_sp').textContent = rawClassSp;
+            document.getElementById('overview_weapons_sp').textContent = rawWeaponsSp;
+
+
+            // Function to process and reorder benefits for a single category
+            function processStatCategory(categoryKey) {
+                const rawSp = spValues[categoryKey];
+                const definitions = benefitDefinitions[categoryKey];
+                const benefitContainer = document.getElementById(`${categoryKey}_benefits_list`);
+
+                if (!benefitContainer) {
+                    console.error(`Benefit container not found for ${categoryKey}_benefits_list`);
+                    return;
+                }
+
+                const itemsData = definitions.map((def, index) => {
+                    const rawValue = def.calculate(rawSp);
+                    const element = benefitContainer.querySelector(`[data-benefit-key="${def.key}"]`);
+                    if (!element) {
+                        console.error(`Benefit item element not found for key ${def.key} in container ${categoryKey}_benefits_list`);
+                    }
+                    return {
+                        element: element,
+                        rawValue: rawValue,
+                        definition: def,
+                        originalOrder: index
+                    };
+                }).filter(item => item.element);
+
+                itemsData.sort((a, b) => {
+                    const isA_Active = Math.abs(a.rawValue) > 0.0001;
+                    const isB_Active = Math.abs(b.rawValue) > 0.0001;
+
+                    if (isA_Active && !isB_Active) return -1;
+                    if (!isA_Active && isB_Active) return 1;
+                    return a.originalOrder - b.originalOrder;
+                });
+
+                itemsData.forEach(item => benefitContainer.appendChild(item.element));
+
+                itemsData.forEach(item => {
+                    const { rawValue, definition } = item;
+                    let displayValue = formatValue(rawValue, definition.decimals);
+                    let pointsNeededText = "";
+
+                    if (definition.threshold !== null && rawSp > 0 && rawSp < definition.threshold && Math.abs(rawValue) < 0.0001) {
+                        pointsNeededText = ` (${definition.threshold - rawSp} points needed for benefit)`;
+                    }
+
+                    const valueSpan = item.element.querySelector('.benefit-value span');
+                    if (valueSpan) {
+                        valueSpan.textContent = `${displayValue}${definition.unit}${pointsNeededText}`;
+                    } else {
+                        console.error(`Value span not found for key ${definition.key} within its benefit item.`);
+                    }
+                });
+            }
+
+            Object.keys(benefitDefinitions).forEach(categoryKey => {
+                processStatCategory(categoryKey);
+            });
+        }
+
+        // --- UI Toggle Logic ---
+        const manualInputSection = document.getElementById('manual_input_section');
+        const examplePiecesSection = document.getElementById('example_pieces_section');
+        const customPiecesSection = document.getElementById('custom_pieces_section'); // New
+        const showManualInputBtn = document.getElementById('show_manual_input_btn');
+        const showExamplePiecesBtn = document.getElementById('show_example_pieces_btn');
+        const showCustomPiecesBtn = document.getElementById('show_custom_pieces_btn'); // New
+
+        /**
+         * Shows the specified section (manual input, example pieces, or custom pieces) and updates button active states.
+         * @param {string} sectionToShow - 'manual', 'example', or 'custom'
+         */
+        function showSection(sectionToShow) {
+            // Hide all sections
+            manualInputSection.classList.add('hidden');
+            examplePiecesSection.classList.add('hidden');
+            customPiecesSection.classList.add('hidden'); // New
+
+            // Deactivate all buttons
+            showManualInputBtn.classList.remove('active');
+            showExamplePiecesBtn.classList.remove('active');
+            showCustomPiecesBtn.classList.remove('active'); // New
+
+            // Show selected section and activate its button
+            if (sectionToShow === 'manual') {
+                manualInputSection.classList.remove('hidden');
+                showManualInputBtn.classList.add('active');
+            } else if (sectionToShow === 'example') {
+                examplePiecesSection.classList.remove('hidden');
+                showExamplePiecesBtn.classList.add('active');
+            } else if (sectionToShow === 'custom') { // New
+                customPiecesSection.classList.remove('hidden');
+                showCustomPiecesBtn.classList.add('active');
+                calculateAndApplyTotalCustomStats(); // Recalculate when showing custom section
+            }
+            // Trigger update of benefits whenever the section changes,
+            // as the visible input values might have changed.
+            updateAllBenefits();
+        }
+
+        // Event Listeners for input fields (manual input)
+        const inputs = document.querySelectorAll('#manual_input_section input[type="number"]');
+        inputs.forEach(input => {
+            input.addEventListener('input', updateAllBenefits);
+            input.addEventListener('change', updateAllBenefits);
+        });
+
+        // Event Listeners for UI toggle buttons
+        showManualInputBtn.addEventListener('click', () => showSection('manual'));
+        showExamplePiecesBtn.addEventListener('click', () => showSection('example'));
+        showCustomPiecesBtn.addEventListener('click', () => showSection('custom')); // New
+
+        // Event listener for the "Generate & Apply Archetype Stats" button (in Example Pieces section)
+        document.getElementById('generate_archetype_stats_btn').addEventListener('click', generateAndApplyArchetypeStats);
+
+        // Add event listeners to archetype select elements in Example Pieces section to update their individual stats display
+        const exampleArchetypeSelects = document.querySelectorAll('.armor-slot-selection select');
+        exampleArchetypeSelects.forEach(select => {
+            select.addEventListener('change', (event) => {
+                const slot = event.target.id.replace('_archetype', '');
+                const statsDisplay = document.querySelector(`.selected-${slot}-stats`);
+                const selectedArchetype = event.target.value;
+
+                if (selectedArchetype) {
+                    const { pieceStats, primaryStatName, secondaryStatName, randomStatName } = calculateArchetypePieceStats(selectedArchetype);
+                    
+                    let statsTextParts = [];
+                    if (pieceStats[primaryStatName] > 0) {
+                        statsTextParts.push(`${primaryStatName.charAt(0).toUpperCase() + primaryStatName.slice(1)}: ${pieceStats[primaryStatName]}`);
+                    }
+                    if (pieceStats[secondaryStatName] > 0) {
+                        statsTextParts.push(`${secondaryStatName.charAt(0).toUpperCase() + secondaryStatName.slice(1)}: ${pieceStats[secondaryStatName]}`);
+                    }
+                    if (randomStatName && pieceStats[randomStatName] > 0) {
+                        statsTextParts.push(`${randomStatName.charAt(0).toUpperCase() + randomStatName.slice(1)}: ${pieceStats[randomStatName]}`);
+                    }
+                    statsDisplay.textContent = `Stats: ${statsTextParts.join(', ')}`;
+                } else {
+                    statsDisplay.textContent = 'No archetype selected.';
+                }
+            });
+        });
+
+        // Event Listeners for Custom Pieces archetype selects
+        const customArchetypeSelects = document.querySelectorAll('[id^="custom_"][id$="_archetype"]');
+        customArchetypeSelects.forEach(select => {
+            select.addEventListener('change', (event) => {
+                const slot = event.target.id.replace('custom_', '').replace('_archetype', '');
+                renderCustomPieceControls(slot, event.target.value);
+            });
+        });
+
+        // Event listener for the "Apply Custom Stats to Overview" button
+        document.getElementById('apply_custom_stats_btn').addEventListener('click', calculateAndApplyTotalCustomStats);
+
+
+        // Initial state: show manual input and update benefits on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            updateAllBenefits(); // Call once to initialize overview with default values
+            showSection('manual'); // Then show the manual section
+            // Initialize the stat display for each archetype select on load (for Example Pieces section)
+            exampleArchetypeSelects.forEach(select => {
+                const slot = select.id.replace('_archetype', '');
+                const statsDisplay = document.querySelector(`.selected-${slot}-stats`);
+                statsDisplay.textContent = 'No archetype selected.';
+            });
+            // Initialize custom piece displays
+            Object.keys(customArmorPieceValues).forEach(slot => {
+                updateSinglePieceStatsDisplay(slot);
+            });
+        });
+    </script>
+</body>
+</html>
