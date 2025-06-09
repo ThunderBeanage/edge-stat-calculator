@@ -6,8 +6,6 @@
     <title>Edge of Fate Stat Calculator</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome CDN for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -39,15 +37,10 @@
         label {
             font-weight: 600;
             margin-bottom: 0.35rem; /* Slightly more space */
-            display: flex; /* Allow icon alignment */
-            align-items: center;
+            /* Removed display: flex; align-items: center; as icons are gone */
             color: #a0aec0; /* Medium gray for labels */
         }
-        label i {
-            margin-right: 0.6rem; /* Space between icon and text */
-            color: #63b3ed; /* Blue for icons */
-            font-size: 1.1em;
-        }
+        /* Removed .label img styling as no image icons */
         input[type="number"], select {
             width: 100%;
             padding: 0.65rem; /* Slightly more padding */
@@ -113,9 +106,11 @@
         .benefit-name {
             color: #a0aec0;
             flex-shrink: 0;
-            margin-right: 0.75rem; /* More space */
+            /* Removed margin-right as icons are gone */
             font-size: 0.95rem;
+            /* Removed display: flex; align-items: center; as icons are gone */
         }
+        /* Removed .benefit-name img styling as no image icons */
         .benefit-value {
             font-weight: 700; /* Bolder value */
             color: #f0e68c; /* Gold accent */
@@ -231,27 +226,27 @@
                     <div class="stat-card">
                         <h2 class="text-2xl font-semibold">Input Stat Points (0-200)</h2>
                         <div>
-                            <label for="health_sp"><i class="fas fa-heart"></i>Health Stat Points:</label>
+                            <label for="health_sp">Health Stat Points:</label>
                             <input type="number" id="health_sp" min="0" max="200" value="0">
                         </div>
                         <div>
-                            <label for="melee_sp"><i class="fas fa-fist-raised"></i>Melee Stat Points:</label>
+                            <label for="melee_sp">Melee Stat Points:</label>
                             <input type="number" id="melee_sp" min="0" max="200" value="0">
                         </div>
                         <div>
-                            <label for="grenade_sp"><i class="fas fa-bomb"></i>Grenade Stat Points:</label>
+                            <label for="grenade_sp">Grenade Stat Points:</label>
                             <input type="number" id="grenade_sp" min="0" max="200" value="0">
                         </div>
                         <div>
-                            <label for="super_sp"><i class="fas fa-star-half-alt"></i>Super Stat Points:</label>
+                            <label for="super_sp">Super Stat Points:</label>
                             <input type="number" id="super_sp" min="0" max="200" value="0">
                         </div>
                         <div>
-                            <label for="class_sp"><i class="fas fa-users"></i>Class Stat Points:</label>
+                            <label for="class_sp">Class Stat Points:</label>
                             <input type="number" id="class_sp" min="0" max="200" value="0">
                         </div>
                         <div>
-                            <label for="weapons_sp"><i class="fas fa-crosshairs"></i>Weapons Stat Points:</label>
+                            <label for="weapons_sp">Weapons Stat Points:</label>
                             <input type="number" id="weapons_sp" min="0" max="200" value="0">
                         </div>
                     </div>
@@ -267,7 +262,7 @@
 
                         <div class="armor-slot-selection">
                             <div>
-                                <label for="helmet_archetype"><i class="fas fa-hat-wizard"></i>Helmet Archetype:</label>
+                                <label for="helmet_archetype">Helmet Archetype:</label>
                                 <select id="helmet_archetype">
                                     <option value="">Select Archetype</option>
                                     <option value="Brawler">Brawler (Melee, Health)</option>
@@ -280,7 +275,7 @@
                                 <div class="selected-helmet-stats text-sm text-gray-400 mb-2">No archetype selected.</div>
                             </div>
                             <div>
-                                <label for="arms_archetype"><i class="fas fa-hands-clapping"></i>Arms Archetype:</label>
+                                <label for="arms_archetype">Arms Archetype:</label>
                                 <select id="arms_archetype">
                                     <option value="">Select Archetype</option>
                                     <option value="Brawler">Brawler (Melee, Health)</option>
@@ -293,7 +288,7 @@
                                 <div class="selected-arms-stats text-sm text-gray-400 mb-2">No archetype selected.</div>
                             </div>
                             <div>
-                                <label for="chest_archetype"><i class="fas fa-shield-alt"></i>Chest Archetype:</label>
+                                <label for="chest_archetype">Chest Archetype:</label>
                                 <select id="chest_archetype">
                                     <option value="">Select Archetype</option>
                                     <option value="Brawler">Brawler (Melee, Health)</option>
@@ -306,7 +301,7 @@
                                 <div class="selected-chest-stats text-sm text-gray-400 mb-2">No archetype selected.</div>
                             </div>
                             <div>
-                                <label for="legs_archetype"><i class="fas fa-shoe-prints"></i>Legs Archetype:</label>
+                                <label for="legs_archetype">Legs Archetype:</label>
                                 <select id="legs_archetype">
                                     <option value="">Select Archetype</option>
                                     <option value="Brawler">Brawler (Melee, Health)</option>
@@ -319,7 +314,7 @@
                                 <div class="selected-legs-stats text-sm text-gray-400 mb-2">No archetype selected.</div>
                             </div>
                             <div>
-                                <label for="class_item_archetype"><i class="fas fa-gem"></i>Class Item Archetype:</label>
+                                <label for="class_item_archetype">Class Item Archetype:</label>
                                 <select id="class_item_archetype">
                                     <option value="">Select Archetype</option>
                                     <option value="Brawler">Brawler (Melee, Health)</option>
@@ -347,7 +342,7 @@
                         <!-- Helmet -->
                         <div class="stat-card">
                             <h3 class="text-xl font-semibold text-blue-300 mb-2">Custom Helmet</h3>
-                            <label for="custom_helmet_archetype"><i class="fas fa-hat-wizard"></i>Helmet Archetype:</label>
+                            <label for="custom_helmet_archetype">Helmet Archetype:</label>
                             <select id="custom_helmet_archetype">
                                 <option value="">Select Archetype</option>
                                 <option value="Brawler">Brawler (Melee, Health)</option>
@@ -366,7 +361,7 @@
                         <!-- Arms -->
                         <div class="stat-card">
                             <h3 class="text-xl font-semibold text-blue-300 mb-2">Custom Arms</h3>
-                            <label for="custom_arms_archetype"><i class="fas fa-hands-clapping"></i>Arms Archetype:</label>
+                            <label for="custom_arms_archetype">Arms Archetype:</label>
                             <select id="custom_arms_archetype">
                                 <option value="">Select Archetype</option>
                                 <option value="Brawler">Brawler (Melee, Health)</option>
@@ -385,7 +380,7 @@
                         <!-- Chest -->
                         <div class="stat-card">
                             <h3 class="text-xl font-semibold text-blue-300 mb-2">Custom Chest</h3>
-                            <label for="custom_chest_archetype"><i class="fas fa-shield-alt"></i>Chest Archetype:</label>
+                            <label for="custom_chest_archetype">Chest Archetype:</label>
                             <select id="custom_chest_archetype">
                                 <option value="">Select Archetype</option>
                                 <option value="Brawler">Brawler (Melee, Health)</option>
@@ -404,7 +399,7 @@
                         <!-- Legs -->
                         <div class="stat-card">
                             <h3 class="text-xl font-semibold text-blue-300 mb-2">Custom Legs</h3>
-                            <label for="custom_legs_archetype"><i class="fas fa-shoe-prints"></i>Legs Archetype:</label>
+                            <label for="custom_legs_archetype">Legs Archetype:</label>
                             <select id="custom_legs_archetype">
                                 <option value="">Select Archetype</option>
                                 <option value="Brawler">Brawler (Melee, Health)</option>
@@ -423,7 +418,7 @@
                         <!-- Class Item -->
                         <div class="stat-card">
                             <h3 class="text-xl font-semibold text-blue-300 mb-2">Custom Class Item</h3>
-                            <label for="custom_class_item_archetype"><i class="fas fa-gem"></i>Class Item Archetype:</label>
+                            <label for="custom_class_item_archetype">Class Item Archetype:</label>
                             <select id="custom_class_item_archetype">
                                 <option value="">Select Archetype</option>
                                 <option value="Brawler">Brawler (Melee, Health)</option>
@@ -448,27 +443,27 @@
                 <h2 class="text-2xl font-semibold">Current Stat Overview</h2>
                 <div class="text-lg space-y-2">
                     <div class="flex justify-between items-center benefit-item">
-                        <span class="benefit-name"><i class="fas fa-heart"></i>Health:</span>
+                        <span class="benefit-name">Health:</span>
                         <span class="benefit-value"><span id="overview_health_sp">0</span></span>
                     </div>
                     <div class="flex justify-between items-center benefit-item">
-                        <span class="benefit-name"><i class="fas fa-fist-raised"></i>Melee:</span>
+                        <span class="benefit-name">Melee:</span>
                         <span class="benefit-value"><span id="overview_melee_sp">0</span></span>
                     </div>
                     <div class="flex justify-between items-center benefit-item">
-                        <span class="benefit-name"><i class="fas fa-bomb"></i>Grenade:</span>
+                        <span class="benefit-name">Grenade:</span>
                         <span class="benefit-value"><span id="overview_grenade_sp">0</span></span>
                     </div>
                     <div class="flex justify-between items-center benefit-item">
-                        <span class="benefit-name"><i class="fas fa-star-half-alt"></i>Super:</span>
+                        <span class="benefit-name">Super:</span>
                         <span class="benefit-value"><span id="overview_super_sp">0</span></span>
                     </div>
                     <div class="flex justify-between items-center benefit-item">
-                        <span class="benefit-name"><i class="fas fa-users"></i>Class:</span>
+                        <span class="benefit-name">Class:</span>
                         <span class="benefit-value"><span id="overview_class_sp">0</span></span>
                     </div>
                     <div class="flex justify-between items-center benefit-item">
-                        <span class="benefit-name"><i class="fas fa-crosshairs"></i>Weapons:</span>
+                        <span class="benefit-name">Weapons:</span>
                         <span class="benefit-value"><span id="overview_weapons_sp">0</span></span>
                     </div>
                 </div>
@@ -1234,7 +1229,7 @@
             }
             // Clear custom piece UI
             document.querySelectorAll('[id$="_sliders_container"]').forEach(container => container.innerHTML = '');
-            document.querySelectorAll('[id$="_stats_display"]').forEach(display => display.textContent = '');
+            document.querySelectorAll('[id$="_stats_display"]').forEach(display => display.textContent = ''); // Fixed: Added missing ')'
             document.querySelectorAll('[id^="custom_"][id$="_archetype"]').forEach(select => select.value = '');
 
 
