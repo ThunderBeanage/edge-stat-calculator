@@ -320,7 +320,7 @@
                             <div id="custom_class_item_stats_display" class="custom-piece-stats text-sm text-gray-400 mt-2">Current Class Item Stats: Health: 0, Melee: 0, Grenade: 0, Super: 0, Class: 0, Weapons: 0</div>
                         </div>
                     </div>
-                    <button id="apply_custom_stats_btn" class="btn w-full mt-4">Apply Custom Stats to Overview</button>
+                    <!-- The "Apply Custom Stats to Overview" button is now removed -->
                 </div>
             </div>
 
@@ -1193,8 +1193,8 @@
             });
         });
 
-        // Event listener for the "Apply Custom Stats to Overview" button
-        document.getElementById('apply_custom_stats_btn').addEventListener('click', calculateAndApplyTotalCustomStats);
+        // Event listener for the "Apply Custom Stats to Overview" button - REMOVED
+        // document.getElementById('apply_custom_stats_btn').addEventListener('click', calculateAndApplyTotalCustomStats);
 
 
         // Initial state: ensure custom pieces section is visible and initialize stats
