@@ -37,10 +37,8 @@
         label {
             font-weight: 600;
             margin-bottom: 0.35rem; /* Slightly more space */
-            /* Removed display: flex; align-items: center; as icons are gone */
             color: #a0aec0; /* Medium gray for labels */
         }
-        /* Removed .label img styling as no image icons */
         input[type="number"], select {
             width: 100%;
             padding: 0.65rem; /* Slightly more padding */
@@ -106,11 +104,8 @@
         .benefit-name {
             color: #a0aec0;
             flex-shrink: 0;
-            /* Removed margin-right as icons are gone */
             font-size: 0.95rem;
-            /* Removed display: flex; align-items: center; as icons are gone */
         }
-        /* Removed .benefit-name img styling as no image icons */
         .benefit-value {
             font-weight: 700; /* Bolder value */
             color: #f0e68c; /* Gold accent */
@@ -160,25 +155,34 @@
             transform: translateY(0);
         }
 
-        .toggle-buttons button {
+        .toggle-buttons button { /* This class is now unused but kept for reference, can be removed */
             flex: 1;
-            margin: 0 0.4rem; /* More space between toggle buttons */
-            min-width: 140px; /* Increased min-width */
+            margin: 0 0.4rem;
+            min-width: 140px;
             font-size: 0.95rem;
         }
 
-        .selected-helmet-stats,
+        .selected-helmet-stats, /* These classes are now unused, can be removed */
         .selected-arms-stats,
         .selected-chest-stats,
         .selected-legs-stats,
-        .selected-class_item-stats,
-        .custom-piece-stats {
+        .selected-class_item-stats {
             margin-top: 0.5rem;
-            margin-bottom: 1rem; /* More space below generated stats */
+            margin-bottom: 1rem;
             padding-left: 0.5rem;
             font-size: 0.9rem;
-            color: #b2f5ea; /* Teal color for generated stats */
-            border-left: 3px solid #81e6d9; /* Accent border */
+            color: #b2f5ea;
+            border-left: 3px solid #81e6d9;
+            padding-left: 0.75rem;
+        }
+
+        .custom-piece-stats { /* This class is still used for the custom piece display */
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+            padding-left: 0.5rem;
+            font-size: 0.9rem;
+            color: #b2f5ea;
+            border-left: 3px solid #81e6d9;
             padding-left: 0.75rem;
         }
         .custom-slider-group .slider-value {
@@ -197,10 +201,10 @@
             .grid {
                 grid-template-columns: 1fr; /* Single column layout on small screens */
             }
-            .toggle-buttons {
+            .toggle-buttons { /* This class is now unused but kept for reference, can be removed */
                 flex-direction: column; /* Stack buttons vertically */
             }
-            .toggle-buttons button {
+            .toggle-buttons button { /* This class is now unused but kept for reference, can be removed */
                 margin: 0.5rem 0; /* Space out stacked buttons */
                 width: 100%;
             }
@@ -211,128 +215,10 @@
     <div class="container">
         <h1 class="text-4xl font-bold text-center text-blue-400 mb-10">Edge of Fate Stat Calculator</h1>
 
-        <!-- Toggle Buttons for sections -->
-        <div class="flex flex-wrap justify-center mb-6">
-            <button id="show_manual_input_btn" class="btn active">Manual Input</button>
-            <button id="show_example_pieces_btn" class="btn">Example Pieces</button>
-            <button id="show_custom_pieces_btn" class="btn">Custom Pieces</button>
-        </div>
-
         <div class="grid md:grid-cols-2 gap-8">
-            <!-- Left Column: Conditionally rendered sections -->
+            <!-- Left Column: Custom Pieces Section (Always visible) -->
             <div>
-                <!-- Input Stat Points Section -->
-                <div id="manual_input_section">
-                    <div class="stat-card">
-                        <h2 class="text-2xl font-semibold">Input Stat Points (0-200)</h2>
-                        <div>
-                            <label for="health_sp">Health Stat Points:</label>
-                            <input type="number" id="health_sp" min="0" max="200" value="0">
-                        </div>
-                        <div>
-                            <label for="melee_sp">Melee Stat Points:</label>
-                            <input type="number" id="melee_sp" min="0" max="200" value="0">
-                        </div>
-                        <div>
-                            <label for="grenade_sp">Grenade Stat Points:</label>
-                            <input type="number" id="grenade_sp" min="0" max="200" value="0">
-                        </div>
-                        <div>
-                            <label for="super_sp">Super Stat Points:</label>
-                            <input type="number" id="super_sp" min="0" max="200" value="0">
-                        </div>
-                        <div>
-                            <label for="class_sp">Class Stat Points:</label>
-                            <input type="number" id="class_sp" min="0" max="200" value="0">
-                        </div>
-                        <div>
-                            <label for="weapons_sp">Weapons Stat Points:</label>
-                            <input type="number" id="weapons_sp" min="0" max="200" value="0">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Example Pieces Section (Initially hidden) -->
-                <div id="example_pieces_section" class="hidden">
-                    <div class="stat-card">
-                        <h2 class="text-2xl font-semibold">Generate Example Armor Pieces</h2>
-                        <p class="text-sm text-gray-400 mb-4">
-                            Select an archetype for each armor slot. Each piece will get 30 primary, 20 secondary, and 15-22 random points.
-                        </p>
-
-                        <div class="armor-slot-selection">
-                            <div>
-                                <label for="helmet_archetype">Helmet Archetype:</label>
-                                <select id="helmet_archetype">
-                                    <option value="">Select Archetype</option>
-                                    <option value="Brawler">Brawler (Melee, Health)</option>
-                                    <option value="Gunner">Gunner (Weapons, Grenade)</option>
-                                    <option value="Specialist">Specialist (Class, Weapons)</option>
-                                    <option value="Grenadier">Grenadier (Grenade, Super)</option>
-                                    <option value="Paragon">Paragon (Super, Melee)</option>
-                                    <option value="Bulwark">Bulwark (Health, Class)</option>
-                                </select>
-                                <div class="selected-helmet-stats text-sm text-gray-400 mb-2">No archetype selected.</div>
-                            </div>
-                            <div>
-                                <label for="arms_archetype">Arms Archetype:</label>
-                                <select id="arms_archetype">
-                                    <option value="">Select Archetype</option>
-                                    <option value="Brawler">Brawler (Melee, Health)</option>
-                                    <option value="Gunner">Gunner (Weapons, Grenade)</option>
-                                    <option value="Specialist">Specialist (Class, Weapons)</option>
-                                    <option value="Grenadier">Grenadier (Grenade, Super)</option>
-                                    <option value="Paragon">Paragon (Super, Melee)</option>
-                                    <option value="Bulwark">Bulwark (Health, Class)</option>
-                                </select>
-                                <div class="selected-arms-stats text-sm text-gray-400 mb-2">No archetype selected.</div>
-                            </div>
-                            <div>
-                                <label for="chest_archetype">Chest Archetype:</label>
-                                <select id="chest_archetype">
-                                    <option value="">Select Archetype</option>
-                                    <option value="Brawler">Brawler (Melee, Health)</option>
-                                    <option value="Gunner">Gunner (Weapons, Grenade)</option>
-                                    <option value="Specialist">Specialist (Class, Weapons)</option>
-                                    <option value="Grenadier">Grenadier (Grenade, Super)</option>
-                                    <option value="Paragon">Paragon (Super, Melee)</option>
-                                    <option value="Bulwark">Bulwark (Health, Class)</option>
-                                </select>
-                                <div class="selected-chest-stats text-sm text-gray-400 mb-2">No archetype selected.</div>
-                            </div>
-                            <div>
-                                <label for="legs_archetype">Legs Archetype:</label>
-                                <select id="legs_archetype">
-                                    <option value="">Select Archetype</option>
-                                    <option value="Brawler">Brawler (Melee, Health)</option>
-                                    <option value="Gunner">Gunner (Weapons, Grenade)</option>
-                                    <option value="Specialist">Specialist (Class, Weapons)</option>
-                                    <option value="Grenadier">Grenadier (Grenade, Super)</option>
-                                    <option value="Paragon">Paragon (Super, Melee)</option>
-                                    <option value="Bulwark">Bulwark (Health, Class)</option>
-                                </select>
-                                <div class="selected-legs-stats text-sm text-gray-400 mb-2">No archetype selected.</div>
-                            </div>
-                            <div>
-                                <label for="class_item_archetype">Class Item Archetype:</label>
-                                <select id="class_item_archetype">
-                                    <option value="">Select Archetype</option>
-                                    <option value="Brawler">Brawler (Melee, Health)</option>
-                                    <option value="Gunner">Gunner (Weapons, Grenade)</option>
-                                    <option value="Specialist">Specialist (Class, Weapons)</option>
-                                    <option value="Grenadier">Grenadier (Grenade, Super)</option>
-                                    <option value="Paragon">Paragon (Super, Melee)</option>
-                                    <option value="Bulwark">Bulwark (Health, Class)</option>
-                                </select>
-                                <div class="selected-class_item-stats text-sm text-gray-400 mb-2">No archetype selected.</div>
-                            </div>
-                        </div>
-                        <button id="generate_archetype_stats_btn" class="btn w-full mt-4">Generate & Apply Archetype Stats</button>
-                    </div>
-                </div>
-
-                <!-- Custom Pieces Section (Initially hidden) -->
-                <div id="custom_pieces_section" class="hidden">
+                <div id="custom_pieces_section">
                     <h2 class="text-2xl font-semibold text-blue-400 mb-4">Customize Individual Armor Pieces</h2>
                     <p class="text-sm text-gray-400 mb-4">
                         Select an archetype for each piece, then adjust primary, secondary, and one additional stat using sliders.
@@ -1203,87 +1089,30 @@
                 }
             }
 
-            // Update the main input fields
-            document.getElementById('health_sp').value = sanitizeStatPoints(totalCombinedStats.health);
-            document.getElementById('melee_sp').value = sanitizeStatPoints(totalCombinedStats.melee);
-            document.getElementById('grenade_sp').value = sanitizeStatPoints(totalCombinedStats.grenade);
-            document.getElementById('super_sp').value = sanitizeStatPoints(totalCombinedStats.super);
-            document.getElementById('class_sp').value = sanitizeStatPoints(totalCombinedStats.class);
-            document.getElementById('weapons_sp').value = sanitizeStatPoints(totalCombinedStats.weapons);
+            // Update the main input fields - these are now effectively 'virtual' inputs
+            // We no longer have physical inputs to update directly if manual input is removed
+            // Instead, we will directly update the overview section
+            document.getElementById('overview_health_sp').textContent = sanitizeStatPoints(totalCombinedStats.health);
+            document.getElementById('overview_melee_sp').textContent = sanitizeStatPoints(totalCombinedStats.melee);
+            document.getElementById('overview_grenade_sp').textContent = sanitizeStatPoints(totalCombinedStats.grenade);
+            document.getElementById('overview_super_sp').textContent = sanitizeStatPoints(totalCombinedStats.super);
+            document.getElementById('overview_class_sp').textContent = sanitizeStatPoints(totalCombinedStats.class);
+            document.getElementById('overview_weapons_sp').textContent = sanitizeStatPoints(totalCombinedStats.weapons);
 
             updateAllBenefits(); // Trigger the main benefit update
         }
 
 
-        /**
-         * Generates stats for all selected archetype armor pieces (from Example Pieces section), sums them up,
-         * updates the manual input fields, and triggers the benefits recalculation.
-         */
-        function generateAndApplyArchetypeStats() {
-            let totalCombinedStats = { health: 0, melee: 0, grenade: 0, super: 0, class: 0, weapons: 0 };
-            const armorSlots = ['helmet', 'arms', 'chest', 'legs', 'class_item'];
-
-            // Clear custom pieces values when using example pieces
-            for (const slot in customArmorPieceValues) {
-                customArmorPieceValues[slot] = { health: 0, melee: 0, grenade: 0, super: 0, class: 0, weapons: 0, tertiaryStat: null };
-            }
-            // Clear custom piece UI
-            document.querySelectorAll('[id$="_sliders_container"]').forEach(container => container.innerHTML = '');
-            document.querySelectorAll('[id$="_stats_display"]').forEach(display => display.textContent = ''); // Fixed: Added missing ')'
-            document.querySelectorAll('[id^="custom_"][id$="_archetype"]').forEach(select => select.value = '');
-
-
-            armorSlots.forEach(slot => {
-                const archetypeSelect = document.getElementById(`${slot}_archetype`);
-                const selectedArchetype = archetypeSelect.value;
-                const statsDisplay = document.querySelector(`.selected-${slot}-stats`);
-
-                if (selectedArchetype) {
-                    const { pieceStats, primaryStatName, secondaryStatName, randomStatName } = calculateArchetypePieceStats(selectedArchetype);
-
-                    // Update total combined stats
-                    for (const stat in pieceStats) {
-                        totalCombinedStats[stat] += pieceStats[stat];
-                    }
-
-                    // Build stats text in the desired order
-                    let statsTextParts = [];
-                    if (pieceStats[primaryStatName] > 0) {
-                        statsTextParts.push(`${primaryStatName.charAt(0).toUpperCase() + primaryStatName.slice(1)}: ${pieceStats[primaryStatName]}`);
-                    }
-                    if (pieceStats[secondaryStatName] > 0) {
-                        statsTextParts.push(`${secondaryStatName.charAt(0).toUpperCase() + secondaryStatName.slice(1)}: ${pieceStats[secondaryStatName]}`);
-                    }
-                    if (randomStatName && pieceStats[randomStatName] > 0) {
-                        statsTextParts.push(`${randomStatName.charAt(0).toUpperCase() + randomStatName.slice(1)}: ${pieceStats[randomStatName]}`);
-                    }
-                    statsDisplay.textContent = `Stats: ${statsTextParts.join(', ')}`;
-
-                } else {
-                    statsDisplay.textContent = 'No archetype selected.';
-                }
-            });
-
-            // Update the input fields with the total combined stats
-            document.getElementById('health_sp').value = sanitizeStatPoints(totalCombinedStats.health);
-            document.getElementById('melee_sp').value = sanitizeStatPoints(totalCombinedStats.melee);
-            document.getElementById('grenade_sp').value = sanitizeStatPoints(totalCombinedStats.grenade);
-            document.getElementById('super_sp').value = sanitizeStatPoints(totalCombinedStats.super);
-            document.getElementById('class_sp').value = sanitizeStatPoints(totalCombinedStats.class);
-            document.getElementById('weapons_sp').value = sanitizeStatPoints(totalCombinedStats.weapons);
-
-            // Trigger update of benefits
-            updateAllBenefits();
-        }
-
         // --- Main Calculation and UI Update ---
         function updateAllBenefits() {
-            const rawClassSp = parseInt(document.getElementById('class_sp').value) || 0;
-            const rawHealthSp = parseInt(document.getElementById('health_sp').value) || 0;
-            const rawWeaponsSp = parseInt(document.getElementById('weapons_sp').value) || 0;
-            const rawMeleeSp = parseInt(document.getElementById('melee_sp').value) || 0;
-            const rawGrenadeSp = parseInt(document.getElementById('grenade_sp').value) || 0;
-            const rawSuperSp = parseInt(document.getElementById('super_sp').value) || 0;
+            // Retrieve values directly from the overview spans or from customArmorPieceValues totals
+            // since manual inputs are removed.
+            const rawHealthSp = parseInt(document.getElementById('overview_health_sp').textContent) || 0;
+            const rawMeleeSp = parseInt(document.getElementById('overview_melee_sp').textContent) || 0;
+            const rawGrenadeSp = parseInt(document.getElementById('overview_grenade_sp').textContent) || 0;
+            const rawSuperSp = parseInt(document.getElementById('overview_super_sp').textContent) || 0;
+            const rawClassSp = parseInt(document.getElementById('overview_class_sp').textContent) || 0;
+            const rawWeaponsSp = parseInt(document.getElementById('overview_weapons_sp').textContent) || 0;
 
             const spValues = {
                 class: rawClassSp,
@@ -1294,14 +1123,7 @@
                 super: rawSuperSp
             };
 
-            // Update the "Current Stat Overview" section
-            document.getElementById('overview_health_sp').textContent = rawHealthSp;
-            document.getElementById('overview_melee_sp').textContent = rawMeleeSp;
-            document.getElementById('overview_grenade_sp').textContent = rawGrenadeSp;
-            document.getElementById('overview_super_sp').textContent = rawSuperSp;
-            document.getElementById('overview_class_sp').textContent = rawClassSp;
-            document.getElementById('overview_weapons_sp').textContent = rawWeaponsSp;
-
+            // Update the "Current Stat Overview" section - This is already done by calculateAndApplyTotalCustomStats
 
             // Function to process and reorder benefits for a single category
             function processStatCategory(categoryKey) {
@@ -1362,89 +1184,6 @@
             });
         }
 
-        // --- UI Toggle Logic ---
-        const manualInputSection = document.getElementById('manual_input_section');
-        const examplePiecesSection = document.getElementById('example_pieces_section');
-        const customPiecesSection = document.getElementById('custom_pieces_section');
-        const showManualInputBtn = document.getElementById('show_manual_input_btn');
-        const showExamplePiecesBtn = document.getElementById('show_example_pieces_btn');
-        const showCustomPiecesBtn = document.getElementById('show_custom_pieces_btn');
-
-        /**
-         * Shows the specified section (manual input, example pieces, or custom pieces) and updates button active states.
-         * @param {string} sectionToShow - 'manual', 'example', or 'custom'
-         */
-        function showSection(sectionToShow) {
-            // Hide all sections
-            manualInputSection.classList.add('hidden');
-            examplePiecesSection.classList.add('hidden');
-            customPiecesSection.classList.add('hidden');
-
-            // Deactivate all buttons
-            showManualInputBtn.classList.remove('active');
-            showExamplePiecesBtn.classList.remove('active');
-            showCustomPiecesBtn.classList.remove('active');
-
-            // Show selected section and activate its button
-            if (sectionToShow === 'manual') {
-                manualInputSection.classList.remove('hidden');
-                showManualInputBtn.classList.add('active');
-            } else if (sectionToShow === 'example') {
-                examplePiecesSection.classList.remove('hidden');
-                showExamplePiecesBtn.classList.add('active');
-            } else if (sectionToShow === 'custom') {
-                customPiecesSection.classList.remove('hidden');
-                showCustomPiecesBtn.classList.add('active');
-                calculateAndApplyTotalCustomStats(); // Recalculate when showing custom section
-            }
-            // Trigger update of benefits whenever the section changes,
-            // as the visible input values might have changed.
-            updateAllBenefits();
-        }
-
-        // Event Listeners for input fields (manual input)
-        const inputs = document.querySelectorAll('#manual_input_section input[type="number"]');
-        inputs.forEach(input => {
-            input.addEventListener('input', updateAllBenefits);
-            input.addEventListener('change', updateAllBenefits);
-        });
-
-        // Event Listeners for UI toggle buttons
-        showManualInputBtn.addEventListener('click', () => showSection('manual'));
-        showExamplePiecesBtn.addEventListener('click', () => showSection('example'));
-        showCustomPiecesBtn.addEventListener('click', () => showSection('custom'));
-
-        // Event listener for the "Generate & Apply Archetype Stats" button (in Example Pieces section)
-        document.getElementById('generate_archetype_stats_btn').addEventListener('click', generateAndApplyArchetypeStats);
-
-        // Add event listeners to archetype select elements in Example Pieces section to update their individual stats display
-        const exampleArchetypeSelects = document.querySelectorAll('.armor-slot-selection select');
-        exampleArchetypeSelects.forEach(select => {
-            select.addEventListener('change', (event) => {
-                const slot = event.target.id.replace('_archetype', '');
-                const statsDisplay = document.querySelector(`.selected-${slot}-stats`);
-                const selectedArchetype = event.target.value;
-
-                if (selectedArchetype) {
-                    const { pieceStats, primaryStatName, secondaryStatName, randomStatName } = calculateArchetypePieceStats(selectedArchetype);
-                    
-                    let statsTextParts = [];
-                    if (pieceStats[primaryStatName] > 0) {
-                        statsTextParts.push(`${primaryStatName.charAt(0).toUpperCase() + primaryStatName.slice(1)}: ${pieceStats[primaryStatName]}`);
-                    }
-                    if (pieceStats[secondaryStatName] > 0) {
-                        statsTextParts.push(`${secondaryStatName.charAt(0).toUpperCase() + secondaryStatName.slice(1)}: ${pieceStats[secondaryStatName]}`);
-                    }
-                    if (randomStatName && pieceStats[randomStatName] > 0) {
-                        statsTextParts.push(`${randomStatName.charAt(0).toUpperCase() + randomStatName.slice(1)}: ${pieceStats[randomStatName]}`);
-                    }
-                    statsDisplay.textContent = `Stats: ${statsTextParts.join(', ')}`;
-                } else {
-                    statsDisplay.textContent = 'No archetype selected.';
-                }
-            });
-        });
-
         // Event Listeners for Custom Pieces archetype selects
         const customArchetypeSelects = document.querySelectorAll('[id^="custom_"][id$="_archetype"]');
         customArchetypeSelects.forEach(select => {
@@ -1458,20 +1197,18 @@
         document.getElementById('apply_custom_stats_btn').addEventListener('click', calculateAndApplyTotalCustomStats);
 
 
-        // Initial state: show manual input and update benefits on page load
+        // Initial state: ensure custom pieces section is visible and initialize stats
         document.addEventListener('DOMContentLoaded', () => {
-            updateAllBenefits(); // Call once to initialize overview with default values
-            showSection('manual'); // Then show the manual section
-            // Initialize the stat display for each archetype select on load (for Example Pieces section)
-            exampleArchetypeSelects.forEach(select => {
-                const slot = select.id.replace('_archetype', '');
-                const statsDisplay = document.querySelector(`.selected-${slot}-stats`);
-                statsDisplay.textContent = 'No archetype selected.';
-            });
-            // Initialize custom piece displays
+            // The custom_pieces_section no longer has the 'hidden' class from the start
+            // so no need to explicitly remove it here.
+
+            // Initialize the stat display for each custom piece
             Object.keys(customArmorPieceValues).forEach(slot => {
-                updateSinglePieceStatsDisplay(slot);
+                // Render controls and initial stats for each piece based on default (0,0,0,0,0,0)
+                // This will also trigger calculateAndApplyTotalCustomStats for initial overview update.
+                renderCustomPieceControls(slot, ''); // Pass empty archetype to ensure initial state is cleared
             });
+            calculateAndApplyTotalCustomStats(); // Ensure initial overview is calculated and benefits updated
         });
     </script>
 </body>
