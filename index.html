@@ -130,16 +130,12 @@
         /* Custom Stat Overview specific styling */
         .overview-card { /* New class for the overview stat card */
             padding: 1rem; /* Further reduced padding */
-            margin-bottom: 2rem; /* Added gap to next section */
+            /* margin-bottom: 2rem; REMOVED from here, managed by main-layout gap */
         }
-        .overview-card h2 {
-            font-size: 1.5rem; /* Smaller title */
-            padding-bottom: 0.5rem;
-            margin-bottom: 0.75rem;
-        }
+        /* .overview-card h2 REMOVED */
         .overview-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); /* Even smaller min-width for columns */
+            grid-template-columns: 1fr; /* Stack overview items vertically in the sidebar */
             gap: 0.5rem; /* Reduced gap */
             padding-top: 0.25rem; /* Further reduced padding */
         }
@@ -193,37 +189,108 @@
             gap: 1.5rem; /* Gap between cards */
             margin-bottom: 2rem; /* Added gap to next section */
         }
+
+        /* Consolidated benefits grid */
         .benefits-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Flexible columns for 3 per row */
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Flexible columns for all benefits in one row */
             gap: 1.5rem; /* Gap between cards */
         }
+
         /* Specific styling for benefit stat-cards */
         .benefits-grid .stat-card {
-            padding: 1rem; /* Reduced padding for benefit cards */
+            padding: 0.75rem; /* Reduced padding for benefit cards to make them smaller */
         }
         .benefits-grid .stat-card h2 {
-            font-size: 1.35rem; /* Reduced font size for benefit titles */
-            margin-bottom: 0.8rem; /* Slightly reduced margin */
-            padding-bottom: 0.6rem;
+            font-size: 1.25rem; /* Reduced font size for benefit titles */
+            margin-bottom: 0.6rem; /* Slightly reduced margin */
+            padding-bottom: 0.5rem;
             /* color will be set by JS via Tailwind classes dynamically */
         }
 
+        /* NEW LAYOUT STYLES */
+        .main-layout {
+            display: flex;
+            flex-wrap: wrap; /* Allows wrapping on smaller screens */
+            gap: 2rem; /* Gap between left content and right sidebar */
+            align-items: flex-start; /* Align content to the top */
+        }
 
-        /* Responsive adjustments for smaller screens */
+        .main-content-left {
+            flex: 1; /* Takes up available space */
+            min-width: 0; /* Prevents overflow */
+            display: flex;
+            flex-direction: column; /* Stack custom pieces and benefits vertically */
+        }
+
+        .sidebar-right {
+            flex-shrink: 0; /* Prevents shrinking more than needed */
+            width: 250px; /* Fixed width for the sidebar on desktop */
+            display: flex; /* Make sidebar a flex container */
+            flex-direction: column; /* Stack its contents vertically */
+            gap: 1.5rem; /* Gap between cards in the sidebar */
+        }
+
+        /* Adjustments for the overview card when it's in the sidebar */
+        .sidebar-right .overview-card {
+            margin-bottom: 0; /* Remove bottom margin if parent handles gap */
+        }
+
+        /* Styling for the moved Weapons Benefits card */
+        .sidebar-right .stat-card:not(.overview-card) { /* Selects any stat-card that is not the overview card in the sidebar */
+            margin-top: 1.5rem; /* Spacing from the overview card */
+            padding: 0.75rem; /* Match other benefit cards' padding */
+        }
+        .sidebar-right .stat-card:not(.overview-card) h2 {
+            font-size: 1.25rem; /* Match other benefit titles */
+            margin-bottom: 0.6rem;
+            padding-bottom: 0.5rem;
+        }
+
+
+        /* Responsive adjustments */
+        @media (min-width: 1024px) { /* Desktop */
+            .benefits-grid {
+                grid-template-columns: repeat(5, 1fr); /* Force 5 columns on large screens for main benefits */
+            }
+        }
+
         @media (max-width: 1200px) { /* Adjust custom pieces grid for smaller large screens */
             .custom-pieces-grid {
                 grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Allow wrapping if needed */
             }
         }
-        @media (max-width: 1023px) { /* On medium screens, aim for 2 columns */
+        @media (min-width: 768px) and (max-width: 1023px) { /* Tablet */
             .benefits-grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(3, 1fr); /* 3 columns on tablets for benefits */
+            }
+            .main-layout {
+                flex-direction: column; /* Stack vertically on tablet */
+            }
+            .main-content-left,
+            .sidebar-right {
+                width: 100%; /* Take full width on smaller screens */
+            }
+            .sidebar-right .overview-grid {
+                grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); /* Revert to horizontal grid on tablets */
             }
         }
-        @media (max-width: 768px) {
-            .custom-pieces-grid, .benefits-grid {
-                grid-template-columns: 1fr; /* Single column layout on small screens */
+        @media (max-width: 767px) { /* Mobile */
+            .custom-pieces-grid,
+            .benefits-grid {
+                grid-template-columns: 1fr; /* Single column layout on small screens for all grids */
+            }
+            .main-layout {
+                flex-direction: column; /* Stack vertically on mobile */
+            }
+            .main-content-left,
+            .sidebar-right {
+                width: 100%; /* Take full width on smaller screens */
+            }
+            .sidebar-right .overview-grid {
+                grid-template-columns: 1fr; /* Stack vertically on mobile within sidebar */
+                /* OR: You could also keep it horizontal on mobile if it fits better */
+                /* grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); */
             }
         }
     </style>
@@ -232,276 +299,282 @@
     <div class="container">
         <h1 class="text-4xl font-bold text-center text-blue-400 mb-10">Edge of Fate Stat Calculator</h1>
 
-        <!-- Current Stat Overview (Now at the very top) -->
-        <div class="stat-card overview-card">
-            <h2 class="text-2xl font-semibold">Current Stat Overview</h2>
-            <div class="overview-grid">
-                <div class="overview-stat-item">
-                    <span class="stat-label">Health</span>
-                    <span class="stat-value" id="overview_health_sp">0</span>
-                </div>
-                <div class="overview-stat-item">
-                    <span class="stat-label">Melee</span>
-                    <span class="stat-value" id="overview_melee_sp">0</span>
-                </div>
-                <div class="overview-stat-item">
-                    <span class="stat-label">Grenade</span>
-                    <span class="stat-value" id="overview_grenade_sp">0</span>
-                </div>
-                <div class="overview-stat-item">
-                    <span class="stat-label">Super</span>
-                    <span class="stat-value" id="overview_super_sp">0</span>
-                </div>
-                <div class="overview-stat-item">
-                    <span class="stat-label">Class</span>
-                    <span class="stat-value" id="overview_class_sp">0</span>
-                </div>
-                <div class="overview-stat-item">
-                    <span class="stat-label">Weapons</span>
-                    <span class="stat-value" id="overview_weapons_sp">0</span>
-                </div>
-            </div>
-        </div>
+        <!-- Main Layout Container -->
+        <div class="main-layout">
+            <!-- Left Column: Custom Pieces and Benefits -->
+            <div class="main-content-left">
+                <!-- Custom Pieces Section -->
+                <div id="custom_armor_slots_container" class="custom-pieces-grid">
+                    <!-- Helmet -->
+                    <div class="stat-card">
+                        <h3 class="text-xl font-semibold text-blue-300 mb-2">Custom Helmet</h3>
+                        <label for="custom_helmet_archetype">Helmet Archetype:</label>
+                        <select id="custom_helmet_archetype">
+                            <option value="">Select Archetype</option>
+                            <option value="Brawler">Brawler (Melee, Health)</option>
+                            <option value="Gunner">Gunner (Weapons, Grenade)</option>
+                            <option value="Specialist">Specialist (Class, Weapons)</option>
+                            <option value="Grenadier">Grenadier (Grenade, Super)</option>
+                            <option value="Paragon">Paragon (Super, Melee)</option>
+                            <option value="Bulwark">Bulwark (Health, Class)</option>
+                        </select>
+                        <div id="custom_helmet_sliders_container" class="mt-4">
+                            <!-- Sliders will be dynamically inserted here -->
+                        </div>
+                        <div id="custom_helmet_stats_display" class="custom-piece-stats text-sm text-gray-400 mt-auto">Current Helmet Stats: None</div>
+                    </div>
 
-        <!-- Custom Pieces Section -->
-        <div id="custom_armor_slots_container" class="custom-pieces-grid">
-            <!-- Helmet -->
-            <div class="stat-card">
-                <h3 class="text-xl font-semibold text-blue-300 mb-2">Custom Helmet</h3>
-                <label for="custom_helmet_archetype">Helmet Archetype:</label>
-                <select id="custom_helmet_archetype">
-                    <option value="">Select Archetype</option>
-                    <option value="Brawler">Brawler (Melee, Health)</option>
-                    <option value="Gunner">Gunner (Weapons, Grenade)</option>
-                    <option value="Specialist">Specialist (Class, Weapons)</option>
-                    <option value="Grenadier">Grenadier (Grenade, Super)</option>
-                    <option value="Paragon">Paragon (Super, Melee)</option>
-                    <option value="Bulwark">Bulwark (Health, Class)</option>
-                </select>
-                <div id="custom_helmet_sliders_container" class="mt-4">
-                    <!-- Sliders will be dynamically inserted here -->
-                </div>
-                <div id="custom_helmet_stats_display" class="custom-piece-stats text-sm text-gray-400 mt-auto">Current Helmet Stats: None</div>
-            </div>
-
-            <!-- Arms -->
-            <div class="stat-card">
-                <h3 class="text-xl font-semibold text-blue-300 mb-2">Custom Arms</h3>
-                <label for="custom_arms_archetype">Arms Archetype:</label>
-                <select id="custom_arms_archetype">
-                    <option value="">Select Archetype</option>
-                    <option value="Brawler">Brawler (Melee, Health)</option>
-                    <option value="Gunner">Gunner (Weapons, Grenade)</option>
-                    <option value="Specialist">Specialist (Class, Weapons)</option>
-                    <option value="Grenadier">Grenadier (Grenade, Super)</option>
-                    <option value="Paragon">Paragon (Super, Melee)</option>
-                    <option value="Bulwark">Bulwark (Health, Class)</option>
-                </select>
-                <div id="custom_arms_sliders_container" class="mt-4">
-                    <!-- Sliders will be dynamically inserted here -->
-                </div>
-                <div id="custom_arms_stats_display" class="custom-piece-stats text-sm text-gray-400 mt-auto">Current Arms Stats: None</div>
-            </div>
-
-            <!-- Chest -->
-            <div class="stat-card">
-                <h3 class="text-xl font-semibold text-blue-300 mb-2">Custom Chest</h3>
-                <label for="custom_chest_archetype">Chest Archetype:</label>
-                <select id="custom_chest_archetype">
-                    <option value="">Select Archetype</option>
-                    <option value="Brawler">Brawler (Melee, Health)</option>
-                    <option value="Gunner">Gunner (Weapons, Grenade)</option>
-                    <option value="Specialist">Specialist (Class, Weapons)</option>
-                    <option value="Grenadier">Grenadier (Grenade, Super)</option>
-                    <option value="Paragon">Paragon (Super, Melee)</option>
-                    <option value="Bulwark">Bulwark (Health, Class)</option>
-                </select>
-                <div id="custom_chest_sliders_container" class="mt-4">
-                    <!-- Sliders will be dynamically inserted here -->
-                </div>
-                <div id="custom_chest_stats_display" class="custom-piece-stats text-sm text-gray-400 mt-auto">Current Chest Stats: None</div>
-            </div>
-
-            <!-- Legs -->
-            <div class="stat-card">
-                <h3 class="text-xl font-semibold text-blue-300 mb-2">Custom Legs</h3>
-                <label for="custom_legs_archetype">Legs Archetype:</label>
-                <select id="custom_legs_archetype">
-                    <option value="">Select Archetype</option>
-                    <option value="Brawler">Brawler (Melee, Health)</option>
-                    <option value="Gunner">Gunner (Weapons, Grenade)</option>
-                    <option value="Specialist">Specialist (Class, Weapons)</option>
-                    <option value="Grenadier">Grenadier (Grenade, Super)</option>
-                    <option value="Paragon">Paragon (Super, Melee)</option>
-                    <option value="Bulwark">Bulwark (Health, Class)</option>
-                </select>
-                <div id="custom_legs_sliders_container" class="mt-4">
-                    <!-- Sliders will be dynamically inserted here -->
-                </div>
-                <div id="custom_legs_stats_display" class="custom-piece-stats text-sm text-gray-400 mt-auto">Current Legs Stats: None</div>
-            </div>
-
-            <!-- Class Item -->
-            <div class="stat-card">
-                <h3 class="text-xl font-semibold text-blue-300 mb-2">Custom Class Item</h3>
-                <label for="custom_class_item_archetype">Class Item Archetype:</label>
-                <select id="custom_class_item_archetype">
-                    <option value="">Select Archetype</option>
-                    <option value="Brawler">Brawler (Melee, Health)</option>
-                    <option value="Gunner">Gunner (Weapons, Grenade)</option>
-                    <option value="Specialist">Specialist (Class, Weapons)</option>
-                    <option value="Grenadier">Grenadier (Grenade, Super)</option>
-                    <option value="Paragon">Paragon (Super, Melee)</option>
-                    <option value="Bulwark">Bulwark (Health, Class)</option>
-                </select>
-                <div id="custom_class_item_sliders_container" class="mt-4">
-                    <!-- Sliders will be dynamically inserted here -->
-                </div>
-                <div id="custom_class_item_stats_display" class="custom-piece-stats text-sm text-gray-400 mt-auto">Current Class Item Stats: None</div>
-            </div>
-        </div>
-
-
-        <!-- Results Section - Benefits -->
-        <div class="benefits-grid">
-            <!-- Health Benefits -->
-            <div class="stat-card">
-                <h2 class="text-xl font-semibold" id="health_benefits_title">Health Benefits</h2>
-                <div id="health_benefits_list">
-                    <div class="benefit-item" data-benefit-key="health_orb">
-                        <span class="benefit-name">Health Per Orb:</span>
-                        <span class="benefit-value"><span id="health_orb">0</span></span>
+                    <!-- Arms -->
+                    <div class="stat-card">
+                        <h3 class="text-xl font-semibold text-blue-300 mb-2">Custom Arms</h3>
+                        <label for="custom_arms_archetype">Arms Archetype:</label>
+                        <select id="custom_arms_archetype">
+                            <option value="">Select Archetype</option>
+                            <option value="Brawler">Brawler (Melee, Health)</option>
+                            <option value="Gunner">Gunner (Weapons, Grenade)</option>
+                            <option value="Specialist">Specialist (Class, Weapons)</option>
+                            <option value="Grenadier">Grenadier (Grenade, Super)</option>
+                            <option value="Paragon">Paragon (Super, Melee)</option>
+                            <option value="Bulwark">Bulwark (Health, Class)</option>
+                        </select>
+                        <div id="custom_arms_sliders_container" class="mt-4">
+                            <!-- Sliders will be dynamically inserted here -->
+                        </div>
+                        <div id="custom_arms_stats_display" class="custom-piece-stats text-sm text-gray-400 mt-auto">Current Arms Stats: None</div>
                     </div>
-                    <div class="benefit-item" data-benefit-key="health_flinch">
-                        <span class="benefit-name">Flinch Resistance:</span>
-                        <span class="benefit-value"><span id="health_flinch">0</span></span>
+
+                    <!-- Chest -->
+                    <div class="stat-card">
+                        <h3 class="text-xl font-semibold text-blue-300 mb-2">Custom Chest</h3>
+                        <label for="custom_chest_archetype">Chest Archetype:</label>
+                        <select id="custom_chest_archetype">
+                            <option value="">Select Archetype</option>
+                            <option value="Brawler">Brawler (Melee, Health)</option>
+                            <option value="Gunner">Gunner (Weapons, Grenade)</option>
+                            <option value="Specialist">Specialist (Class, Weapons)</option>
+                            <option value="Grenadier">Grenadier (Grenade, Super)</option>
+                            <option value="Paragon">Paragon (Super, Melee)</option>
+                            <option value="Bulwark">Bulwark (Health, Class)</option>
+                        </select>
+                        <div id="custom_chest_sliders_container" class="mt-4">
+                            <!-- Sliders will be dynamically inserted here -->
+                        </div>
+                        <div id="custom_chest_stats_display" class="custom-piece-stats text-sm text-gray-400 mt-auto">Current Chest Stats: None</div>
                     </div>
-                    <div class="benefit-item" data-benefit-key="health_shield_recharge">
-                        <span class="benefit-name">Shield Recharge Rate:</span>
-                        <span class="benefit-value"><span id="health_shield_recharge">0</span></span>
+
+                    <!-- Legs -->
+                    <div class="stat-card">
+                        <h3 class="text-xl font-semibold text-blue-300 mb-2">Custom Legs</h3>
+                        <label for="custom_legs_archetype">Legs Archetype:</label>
+                        <select id="custom_legs_archetype">
+                            <option value="">Select Archetype</option>
+                            <option value="Brawler">Brawler (Melee, Health)</option>
+                            <option value="Gunner">Gunner (Weapons, Grenade)</option>
+                            <option value="Specialist">Specialist (Class, Weapons)</option>
+                            <option value="Grenadier">Grenadier (Grenade, Super)</option>
+                            <option value="Paragon">Paragon (Super, Melee)</option>
+                            <option value="Bulwark">Bulwark (Health, Class)</option>
+                        </select>
+                        <div id="custom_legs_sliders_container" class="mt-4">
+                            <!-- Sliders will be dynamically inserted here -->
+                        </div>
+                        <div id="custom_legs_stats_display" class="custom-piece-stats text-sm text-gray-400 mt-auto">Current Legs Stats: None</div>
                     </div>
-                    <div class="benefit-item" data-benefit-key="health_shield_health">
-                        <span class="benefit-name">Shield Health:</span>
-                        <span class="benefit-value"><span id="health_shield_health">0</span></span>
+
+                    <!-- Class Item -->
+                    <div class="stat-card">
+                        <h3 class="text-xl font-semibold text-blue-300 mb-2">Custom Class Item</h3>
+                        <label for="custom_class_item_archetype">Class Item Archetype:</label>
+                        <select id="custom_class_item_archetype">
+                            <option value="">Select Archetype</option>
+                            <option value="Brawler">Brawler (Melee, Health)</option>
+                            <option value="Gunner">Gunner (Weapons, Grenade)</option>
+                            <option value="Specialist">Specialist (Class, Weapons)</option>
+                            <option value="Grenadier">Grenadier (Grenade, Super)</option>
+                            <option value="Paragon">Paragon (Super, Melee)</option>
+                            <option value="Bulwark">Bulwark (Health, Class)</option>
+                        </select>
+                        <div id="custom_class_item_sliders_container" class="mt-4">
+                            <!-- Sliders will be dynamically inserted here -->
+                        </div>
+                        <div id="custom_class_item_stats_display" class="custom-piece-stats text-sm text-gray-400 mt-auto">Current Class Item Stats: None</div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Melee Benefits -->
-            <div class="stat-card">
-                <h2 class="text-xl font-semibold" id="melee_benefits_title">Melee Benefits</h2>
-                <div id="melee_benefits_list">
-                    <div class="benefit-item" data-benefit-key="melee_cooldown">
-                        <span class="benefit-name">Cooldown:</span>
-                        <span class="benefit-value"><span id="melee_cooldown">0</span></span>
+                <!-- Results Section - Benefits (Consolidated into a single grid) -->
+                <div class="benefits-grid">
+                    <!-- Health Benefits -->
+                    <div class="stat-card">
+                        <h2 class="text-xl font-semibold" id="health_benefits_title">Health Benefits</h2>
+                        <div id="health_benefits_list">
+                            <div class="benefit-item" data-benefit-key="health_orb">
+                                <span class="benefit-name">Health Per Orb:</span>
+                                <span class="benefit-value"><span id="health_orb">0</span></span>
+                            </div>
+                            <div class="benefit-item" data-benefit-key="health_flinch">
+                                <span class="benefit-name">Flinch Resistance:</span>
+                                <span class="benefit-value"><span id="health_flinch">0</span></span>
+                            </div>
+                            <div class="benefit-item" data-benefit-key="health_shield_recharge">
+                                <span class="benefit-name">Shield Recharge Rate:</span>
+                                <span class="benefit-value"><span id="health_shield_recharge">0</span></span>
+                            </div>
+                            <div class="benefit-item" data-benefit-key="health_shield_health">
+                                <span class="benefit-name">Shield Health:</span>
+                                <span class="benefit-value"><span id="health_shield_health">0</span></span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="benefit-item" data-benefit-key="melee_energy">
-                        <span class="benefit-name">Energy Gained:</span>
-                        <span class="benefit-value"><span id="melee_energy">0</span></span>
-                    </div>
-                    <div class="benefit-item" data-benefit-key="melee_dmg_pve">
-                        <span class="benefit-name">Damage Increase PvE:</span>
-                        <span class="benefit-value"><span id="melee_dmg_pve">0</span></span>
-                    </div>
-                    <div class="benefit-item" data-benefit-key="melee_dmg_pvp">
-                        <span class="benefit-name">Damage Increase PvP:</span>
-                        <span class="benefit-value"><span id="melee_dmg_pvp">0</span></span>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Grenade Benefits -->
-            <div class="stat-card">
-                <h2 class="text-xl font-semibold" id="grenade_benefits_title">Grenade Benefits</h2>
-                <div id="grenade_benefits_list">
-                    <div class="benefit-item" data-benefit-key="grenade_cooldown">
-                        <span class="benefit-name">Cooldown:</span>
-                        <span class="benefit-value"><span id="grenade_cooldown">0</span></span>
+                    <!-- Melee Benefits -->
+                    <div class="stat-card">
+                        <h2 class="text-xl font-semibold" id="melee_benefits_title">Melee Benefits</h2>
+                        <div id="melee_benefits_list">
+                            <div class="benefit-item" data-benefit-key="melee_cooldown">
+                                <span class="benefit-name">Cooldown:</span>
+                                <span class="benefit-value"><span id="melee_cooldown">0</span></span>
+                            </div>
+                            <div class="benefit-item" data-benefit-key="melee_energy">
+                                <span class="benefit-name">Energy Gained:</span>
+                                <span class="benefit-value"><span id="melee_energy">0</span></span>
+                            </div>
+                            <div class="benefit-item" data-benefit-key="melee_dmg_pve">
+                                <span class="benefit-name">Damage Increase PvE:</span>
+                                <span class="benefit-value"><span id="melee_dmg_pve">0</span></span>
+                            </div>
+                            <div class="benefit-item" data-benefit-key="melee_dmg_pvp">
+                                <span class="benefit-name">Damage Increase PvP:</span>
+                                <span class="benefit-value"><span id="melee_dmg_pvp">0</span></span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="benefit-item" data-benefit-key="grenade_energy">
-                        <span class="benefit-name">Energy Gained:</span>
-                        <span class="benefit-value"><span id="grenade_energy">0</span></span>
-                    </div>
-                    <div class="benefit-item" data-benefit-key="grenade_dmg_pve">
-                        <span class="benefit-name">Damage Increase PvE:</span>
-                        <span class="benefit-value"><span id="grenade_dmg_pve">0</span></span>
-                    </div>
-                    <div class="benefit-item" data-benefit-key="grenade_dmg_pvp">
-                        <span class="benefit-name">Damage Increase PvP:</span>
-                        <span class="benefit-value"><span id="grenade_dmg_pvp">0</span></span>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Super Benefits -->
-            <div class="stat-card">
-                <h2 class="text-xl font-semibold" id="super_benefits_title">Super Benefits</h2>
-                <div id="super_benefits_list">
-                    <div class="benefit-item" data-benefit-key="super_energy">
-                        <span class="benefit-name">Energy Gained:</span>
-                        <span class="benefit-value"><span id="super_energy">0</span></span>
+                    <!-- Grenade Benefits -->
+                    <div class="stat-card">
+                        <h2 class="text-xl font-semibold" id="grenade_benefits_title">Grenade Benefits</h2>
+                        <div id="grenade_benefits_list">
+                            <div class="benefit-item" data-benefit-key="grenade_cooldown">
+                                <span class="benefit-name">Cooldown:</span>
+                                <span class="benefit-value"><span id="grenade_cooldown">0</span></span>
+                            </div>
+                            <div class="benefit-item" data-benefit-key="grenade_energy">
+                                <span class="benefit-name">Energy Gained:</span>
+                                <span class="benefit-value"><span id="grenade_energy">0</span></span>
+                            </div>
+                            <div class="benefit-item" data-benefit-key="grenade_dmg_pve">
+                                <span class="benefit-name">Damage Increase PvE:</span>
+                                <span class="benefit-value"><span id="grenade_dmg_pve">0</span></span>
+                            </div>
+                            <div class="benefit-item" data-benefit-key="grenade_dmg_pvp">
+                                <span class="benefit-name">Damage Increase PvP:</span>
+                                <span class="benefit-value"><span id="grenade_dmg_pvp">0</span></span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="benefit-item" data-benefit-key="super_dmg_pve">
-                        <span class="benefit-name">Damage Increase PvE:</span>
-                        <span class="benefit-value"><span id="super_dmg_pve">0</span></span>
+
+                    <!-- Super Benefits -->
+                    <div class="stat-card">
+                        <h2 class="text-xl font-semibold" id="super_benefits_title">Super Benefits</h2>
+                        <div id="super_benefits_list">
+                            <div class="benefit-item" data-benefit-key="super_energy">
+                                <span class="benefit-name">Energy Gained:</span>
+                                <span class="benefit-value"><span id="super_energy">0</span></span>
+                            </div>
+                            <div class="benefit-item" data-benefit-key="super_dmg_pve">
+                                <span class="benefit-name">Damage Increase PvE:</span>
+                                <span class="benefit-value"><span id="super_dmg_pve">0</span></span>
+                            </div>
+                            <div class="benefit-item" data-benefit-key="super_dmg_pvp">
+                                <span class="benefit-name">Damage Increase PvP:</span>
+                                <span class="benefit-value"><span id="super_dmg_pvp">0</span></span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="benefit-item" data-benefit-key="super_dmg_pvp">
-                        <span class="benefit-name">Damage Increase PvP:</span>
-                        <span class="benefit-value"><span id="super_dmg_pvp">0</span></span>
+
+                    <!-- Class Benefits -->
+                    <div class="stat-card">
+                        <h2 class="text-xl font-semibold" id="class_benefits_title">Class Benefits</h2>
+                        <div id="class_benefits_list">
+                            <div class="benefit-item" data-benefit-key="class_cooldown">
+                                <span class="benefit-name">Cooldown:</span>
+                                <span class="benefit-value"><span id="class_cooldown">0</span></span>
+                            </div>
+                            <div class="benefit-item" data-benefit-key="class_energy">
+                                <span class="benefit-name">Energy Gained:</span>
+                                <span class="benefit-value"><span id="class_energy">0</span></span>
+                            </div>
+                            <div class="benefit-item" data-benefit-key="class_overshield">
+                                <span class="benefit-name">Overshield Health:</span>
+                                <span class="benefit-value"><span id="class_overshield">0</span></span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Class Benefits -->
-            <div class="stat-card">
-                <h2 class="text-xl font-semibold" id="class_benefits_title">Class Benefits</h2>
-                <div id="class_benefits_list">
-                    <div class="benefit-item" data-benefit-key="class_cooldown">
-                        <span class="benefit-name">Cooldown:</span>
-                        <span class="benefit-value"><span id="class_cooldown">0</span></span>
-                    </div>
-                    <div class="benefit-item" data-benefit-key="class_energy">
-                        <span class="benefit-name">Energy Gained:</span>
-                        <span class="benefit-value"><span id="class_energy">0</span></span>
-                    </div>
-                    <div class="benefit-item" data-benefit-key="class_overshield">
-                        <span class="benefit-name">Overshield Health:</span>
-                        <span class="benefit-value"><span id="class_overshield">0</span></span>
+            <!-- Right Column: Current Stat Overview and Weapons Benefits -->
+            <div class="sidebar-right">
+                <div class="stat-card overview-card">
+                    <div class="overview-grid">
+                        <div class="overview-stat-item">
+                            <span class="stat-label">Health</span>
+                            <span class="stat-value" id="overview_health_sp">0</span>
+                        </div>
+                        <div class="overview-stat-item">
+                            <span class="stat-label">Melee</span>
+                            <span class="stat-value" id="overview_melee_sp">0</span>
+                        </div>
+                        <div class="overview-stat-item">
+                            <span class="stat-label">Grenade</span>
+                            <span class="stat-value" id="overview_grenade_sp">0</span>
+                        </div>
+                        <div class="overview-stat-item">
+                            <span class="stat-label">Super</span>
+                            <span class="stat-value" id="overview_super_sp">0</span>
+                        </div>
+                        <div class="overview-stat-item">
+                            <span class="stat-label">Class</span>
+                            <span class="stat-value" id="overview_class_sp">0</span>
+                        </div>
+                        <div class="overview-stat-item">
+                            <span class="stat-label">Weapons</span>
+                            <span class="stat-value" id="overview_weapons_sp">0</span>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Weapons Benefits -->
-            <div class="stat-card">
-                <h2 class="text-xl font-semibold" id="weapons_benefits_title">Weapons Benefits</h2>
-                <div id="weapons_benefits_list">
-                    <div class="benefit-item" data-benefit-key="weapons_reload">
-                        <span class="benefit-name">Reload & Handling:</span>
-                        <span class="benefit-value"><span id="weapons_reload">0</span></span>
-                    </div>
-                    <div class="benefit-item" data-benefit-key="weapons_minor_major_dmg">
-                        <span class="benefit-name">Minor/Major Dmg:</span>
-                        <span class="benefit-value"><span id="weapons_minor_major_dmg">0</span></span>
-                    </div>
-                    <div class="benefit-item" data-benefit-key="weapons_ammo_chance">
-                        <span class="benefit-name">Add. Ammo Chance:</span>
-                        <span class="benefit-value"><span id="weapons_ammo_chance">0</span></span>
-                    </div>
-                    <div class="benefit-item" data-benefit-key="weapons_ps_boss_dmg">
-                        <span class="benefit-name">Pri/Spc Boss Dmg:</span>
-                        <span class="benefit-value"><span id="weapons_ps_boss_dmg">0</span></span>
-                    </div>
-                    <div class="benefit-item" data-benefit-key="weapons_ps_guardian_dmg">
-                        <span class="benefit-name">Pri/Spc Guardian Dmg:</span>
-                        <span class="benefit-value"><span id="weapons_ps_guardian_dmg">0</span></span>
-                    </div>
-                    <div class="benefit-item" data-benefit-key="weapons_heavy_boss_dmg">
-                        <span class="benefit-name">Heavy Boss Dmg:</span>
-                        <span class="benefit-value"><span id="weapons_heavy_boss_dmg">0</span></span>
-                    </div>
-                    <div class="benefit-item" data-benefit-key="weapons_heavy_guardian_dmg">
-                        <span class="benefit-name">Heavy Guardian Dmg:</span>
-                        <span class="benefit-value"><span id="weapons_heavy_guardian_dmg">0</span></span>
+                <!-- Weapons Benefits moved here -->
+                <div class="stat-card">
+                    <h2 class="text-xl font-semibold" id="weapons_benefits_title">Weapons Benefits</h2>
+                    <div id="weapons_benefits_list">
+                        <div class="benefit-item" data-benefit-key="weapons_reload">
+                            <span class="benefit-name">Reload & Handling:</span>
+                            <span class="benefit-value"><span id="weapons_reload">0</span></span>
+                        </div>
+                        <div class="benefit-item" data-benefit-key="weapons_minor_major_dmg">
+                            <span class="benefit-name">Minor/Major Dmg:</span>
+                            <span class="benefit-value"><span id="weapons_minor_major_dmg">0</span></span>
+                        </div>
+                        <div class="benefit-item" data-benefit-key="weapons_ammo_chance">
+                            <span class="benefit-name">Add. Ammo Chance:</span>
+                            <span class="benefit-value"><span id="weapons_ammo_chance">0</span></span>
+                        </div>
+                        <div class="benefit-item" data-benefit-key="weapons_ps_boss_dmg">
+                            <span class="benefit-name">Pri/Spc Boss Dmg:</span>
+                            <span class="benefit-value"><span id="weapons_ps_boss_dmg">0</span></span>
+                        </div>
+                        <div class="benefit-item" data-benefit-key="weapons_ps_guardian_dmg">
+                            <span class="benefit-name">Pri/Spc Guardian Dmg:</span>
+                            <span class="benefit-value"><span id="weapons_ps_guardian_dmg">0</span></span>
+                        </div>
+                        <div class="benefit-item" data-benefit-key="weapons_heavy_boss_dmg">
+                            <span class="benefit-name">Heavy Boss Dmg:</span>
+                            <span class="benefit-value"><span id="weapons_heavy_boss_dmg">0</span></span>
+                        </div>
+                        <div class="benefit-item" data-benefit-key="weapons_heavy_guardian_dmg">
+                            <span class="benefit-name">Heavy Guardian Dmg:</span>
+                            <span class="benefit-value"><span id="weapons_heavy_guardian_dmg">0</span></span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1154,6 +1227,37 @@
                 super: rawSuperSp
             };
 
+            // Define the desired order of categories for rendering in the main benefits grid
+            const mainGridCategories = ['health', 'melee', 'grenade', 'super', 'class']; // Only 5 categories now
+            const benefitsGridContainer = document.querySelector('.benefits-grid');
+
+            // Collect references to existing stat cards for the main grid before clearing
+            const existingMainGridStatCards = {};
+            mainGridCategories.forEach(categoryKey => {
+                const titleElement = document.getElementById(`${categoryKey}_benefits_title`);
+                if (titleElement) {
+                    existingMainGridStatCards[categoryKey] = titleElement.closest('.stat-card');
+                }
+            });
+
+            // Clear the benefits-grid container
+            if (benefitsGridContainer) {
+                benefitsGridContainer.innerHTML = '';
+            }
+
+            // Re-append the collected stat cards to the main grid in the desired order
+            mainGridCategories.forEach(categoryKey => {
+                const statCardElement = existingMainGridStatCards[categoryKey];
+                if (statCardElement && benefitsGridContainer) {
+                    benefitsGridContainer.appendChild(statCardElement);
+                }
+                processStatCategory(categoryKey); // Process categories for the main grid
+            });
+
+            // Separately process the Weapons category since it's now in the sidebar
+            processStatCategory('weapons');
+
+
             // Function to process and reorder benefits for a single category
             function processStatCategory(categoryKey) {
                 const rawSp = spValues[categoryKey];
@@ -1172,8 +1276,12 @@
                     titleElement.classList.add(statColors[categoryKey]);
                 }
 
-
                 const itemsData = definitions.map((def, index) => {
+                    // Check if 'calculate' property exists and is a function
+                    if (typeof def.calculate !== 'function') {
+                        console.error(`Calculation function missing or not a function for benefit key: ${def.key}`);
+                        return null; // Return null for invalid entries
+                    }
                     const rawValue = def.calculate(rawSp);
                     const element = benefitContainer.querySelector(`[data-benefit-key="${def.key}"]`);
                     if (!element) {
@@ -1185,18 +1293,10 @@
                         definition: def,
                         originalOrder: index
                     };
-                }).filter(item => item.element);
+                }).filter(item => item && item.element); // Filter out nulls and items without elements
 
-                itemsData.sort((a, b) => {
-                    const isA_Active = Math.abs(a.rawValue) > 0.0001;
-                    const isB_Active = Math.abs(b.rawValue) > 0.0001;
-
-                    if (isA_Active && !isB_Active) return -1;
-                    if (!isA_Active && isB_Active) return 1;
-                    return a.originalOrder - b.originalOrder;
-                });
-
-                itemsData.forEach(item => benefitContainer.appendChild(item.element));
+                // No need to sort or re-append individual benefit items within a card, as they are static.
+                // Just update their values and colors.
 
                 itemsData.forEach(item => {
                     const { rawValue, definition } = item;
@@ -1218,10 +1318,6 @@
                     }
                 });
             }
-
-            Object.keys(benefitDefinitions).forEach(categoryKey => {
-                processStatCategory(categoryKey);
-            });
         }
 
         // Event Listeners for Custom Pieces archetype selects
