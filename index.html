@@ -27,7 +27,7 @@
         .stat-card {
             background-color: #1a1e27; /* Slightly lighter dark for cards */
             border-radius: 0.75rem; /* More rounded corners */
-            padding: 1.75rem; /* Increased spacing */
+            padding: 1.75rem; /* Increased spacing - original for custom pieces */
             margin-bottom: 1.5rem;
             box-shadow: 0 6px 12px -2px rgba(0, 0, 0, 0.25), 0 3px 7px -3px rgba(0, 0, 0, 0.3); /* Deeper shadow */
             border: 1px solid #2d3748; /* Subtle border for definition */
@@ -36,7 +36,7 @@
             flex-direction: column;
         }
         .stat-card h2 {
-            color: #63b3ed; /* Vibrant blue accent for titles */
+            color: #63b3ed; /* Vibrant blue accent for general titles */
             border-bottom: 2px solid #3c495c; /* Darker, more defined separator */
             padding-bottom: 0.75rem;
             margin-bottom: 1.25rem;
@@ -109,9 +109,9 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0.75rem 0; /* More padding */
+            padding: 0.5rem 0; /* Reduced padding */
             border-bottom: 1px dashed #2d3748; /* Lighter dashed separator */
-            min-height: 2.8em; /* Consistent height */
+            min-height: 2.5em; /* Reduced height */
         }
         .benefit-item:last-child {
             border-bottom: none;
@@ -119,20 +119,29 @@
         .benefit-name {
             color: #a0aec0;
             flex-shrink: 0;
-            font-size: 0.95rem;
+            font-size: 0.9rem; /* Slightly smaller font */
         }
         .benefit-value {
             font-weight: 700; /* Bolder value */
-            color: #f0e68c; /* Gold accent */
-            font-size: 1.05rem;
+            /* color will be set by Tailwind classes dynamically */
+            font-size: 0.95rem; /* Slightly smaller font */
         }
 
         /* Custom Stat Overview specific styling */
+        .overview-card { /* New class for the overview stat card */
+            padding: 1rem; /* Further reduced padding */
+            margin-bottom: 2rem; /* Added gap to next section */
+        }
+        .overview-card h2 {
+            font-size: 1.5rem; /* Smaller title */
+            padding-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
         .overview-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Auto-fit columns */
-            gap: 1rem;
-            padding-top: 0.75rem;
+            grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); /* Even smaller min-width for columns */
+            gap: 0.5rem; /* Reduced gap */
+            padding-top: 0.25rem; /* Further reduced padding */
         }
         .overview-stat-item {
             display: flex;
@@ -141,18 +150,19 @@
             text-align: center;
             background-color: #212936;
             border-radius: 0.5rem;
-            padding: 0.75rem;
+            padding: 0.4rem; /* Reduced padding */
             border: 1px solid #2d3748;
         }
         .overview-stat-item .stat-label {
-            font-size: 0.9rem;
+            font-size: 0.8rem; /* Even smaller font */
             color: #a0aec0;
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.1rem; /* Reduced margin */
         }
+        /* .overview-stat-item .stat-value will have color set by JS via Tailwind classes */
         .overview-stat-item .stat-value {
-            font-size: 1.5rem;
+            font-size: 1.2rem; /* Even smaller font */
             font-weight: 700;
-            color: #81e6d9; /* Teal for overview values */
+            /* color: #81e6d9; REMOVED - NOW DYNAMIC */
         }
 
 
@@ -166,7 +176,7 @@
             padding-left: 0.75rem;
         }
         .custom-slider-group .slider-value {
-            color: #f0e68c;
+            /* color will be set by Tailwind classes dynamically for each stat type */
             font-weight: 700;
         }
         .custom-slider-group label {
@@ -176,32 +186,44 @@
             margin-bottom: 0.5rem; /* More space after slider */
         }
 
-        /* Responsive adjustments for smaller screens */
-        @media (max-width: 768px) {
-            .grid-cols-2, .lg\:grid-cols-3 {
-                grid-template-columns: 1fr; /* Single column layout on small screens */
-            }
-        }
         /* Grid for custom pieces and benefits */
-        .custom-pieces-grid, .benefits-grid {
+        .custom-pieces-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr); /* Force 5 columns */
+            gap: 1.5rem; /* Gap between cards */
+            margin-bottom: 2rem; /* Added gap to next section */
+        }
+        .benefits-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Flexible columns for 3 per row */
             gap: 1.5rem; /* Gap between cards */
         }
-        @media (min-width: 1024px) { /* On large screens, aim for 3 columns */
+        /* Specific styling for benefit stat-cards */
+        .benefits-grid .stat-card {
+            padding: 1rem; /* Reduced padding for benefit cards */
+        }
+        .benefits-grid .stat-card h2 {
+            font-size: 1.35rem; /* Reduced font size for benefit titles */
+            margin-bottom: 0.8rem; /* Slightly reduced margin */
+            padding-bottom: 0.6rem;
+            /* color will be set by JS via Tailwind classes dynamically */
+        }
+
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 1200px) { /* Adjust custom pieces grid for smaller large screens */
             .custom-pieces-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-            .benefits-grid {
-                grid-template-columns: repeat(3, 1fr);
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Allow wrapping if needed */
             }
         }
-        @media (min-width: 768px) and (max-width: 1023px) { /* On medium screens, aim for 2 columns */
-            .custom-pieces-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
+        @media (max-width: 1023px) { /* On medium screens, aim for 2 columns */
             .benefits-grid {
                 grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 768px) {
+            .custom-pieces-grid, .benefits-grid {
+                grid-template-columns: 1fr; /* Single column layout on small screens */
             }
         }
     </style>
@@ -211,7 +233,7 @@
         <h1 class="text-4xl font-bold text-center text-blue-400 mb-10">Edge of Fate Stat Calculator</h1>
 
         <!-- Current Stat Overview (Now at the very top) -->
-        <div class="stat-card mb-8">
+        <div class="stat-card overview-card">
             <h2 class="text-2xl font-semibold">Current Stat Overview</h2>
             <div class="overview-grid">
                 <div class="overview-stat-item">
@@ -242,11 +264,6 @@
         </div>
 
         <!-- Custom Pieces Section -->
-        <h2 class="text-3xl font-bold text-blue-400 mb-6 text-center">Customize Individual Armor Pieces</h2>
-        <p class="text-md text-gray-400 mb-8 text-center max-w-2xl mx-auto">
-            Select an archetype for each piece, then adjust primary, secondary, and one additional stat using sliders.
-            Changes update live to the overview and benefits.
-        </p>
         <div id="custom_armor_slots_container" class="custom-pieces-grid">
             <!-- Helmet -->
             <div class="stat-card">
@@ -346,11 +363,10 @@
 
 
         <!-- Results Section - Benefits -->
-        <h2 class="text-3xl font-bold text-blue-400 mt-10 mb-6 text-center">Calculated Benefits</h2>
         <div class="benefits-grid">
             <!-- Health Benefits -->
             <div class="stat-card">
-                <h2 class="text-xl font-semibold">Health Benefits</h2>
+                <h2 class="text-xl font-semibold" id="health_benefits_title">Health Benefits</h2>
                 <div id="health_benefits_list">
                     <div class="benefit-item" data-benefit-key="health_orb">
                         <span class="benefit-name">Health Per Orb:</span>
@@ -373,7 +389,7 @@
 
             <!-- Melee Benefits -->
             <div class="stat-card">
-                <h2 class="text-xl font-semibold">Melee Benefits</h2>
+                <h2 class="text-xl font-semibold" id="melee_benefits_title">Melee Benefits</h2>
                 <div id="melee_benefits_list">
                     <div class="benefit-item" data-benefit-key="melee_cooldown">
                         <span class="benefit-name">Cooldown:</span>
@@ -396,7 +412,7 @@
 
             <!-- Grenade Benefits -->
             <div class="stat-card">
-                <h2 class="text-xl font-semibold">Grenade Benefits</h2>
+                <h2 class="text-xl font-semibold" id="grenade_benefits_title">Grenade Benefits</h2>
                 <div id="grenade_benefits_list">
                     <div class="benefit-item" data-benefit-key="grenade_cooldown">
                         <span class="benefit-name">Cooldown:</span>
@@ -419,7 +435,7 @@
 
             <!-- Super Benefits -->
             <div class="stat-card">
-                <h2 class="text-xl font-semibold">Super Benefits</h2>
+                <h2 class="text-xl font-semibold" id="super_benefits_title">Super Benefits</h2>
                 <div id="super_benefits_list">
                     <div class="benefit-item" data-benefit-key="super_energy">
                         <span class="benefit-name">Energy Gained:</span>
@@ -438,7 +454,7 @@
 
             <!-- Class Benefits -->
             <div class="stat-card">
-                <h2 class="text-xl font-semibold">Class Benefits</h2>
+                <h2 class="text-xl font-semibold" id="class_benefits_title">Class Benefits</h2>
                 <div id="class_benefits_list">
                     <div class="benefit-item" data-benefit-key="class_cooldown">
                         <span class="benefit-name">Cooldown:</span>
@@ -457,7 +473,7 @@
 
             <!-- Weapons Benefits -->
             <div class="stat-card">
-                <h2 class="text-xl font-semibold">Weapons Benefits</h2>
+                <h2 class="text-xl font-semibold" id="weapons_benefits_title">Weapons Benefits</h2>
                 <div id="weapons_benefits_list">
                     <div class="benefit-item" data-benefit-key="weapons_reload">
                         <span class="benefit-name">Reload & Handling:</span>
@@ -493,6 +509,16 @@
     </div>
 
     <script>
+        // Define color mapping for each stat using Tailwind CSS classes
+        const statColors = {
+            health: 'text-red-400',
+            melee: 'text-lime-400',
+            grenade: 'text-sky-400',
+            super: 'text-yellow-400',
+            class: 'text-white',
+            weapons: 'text-orange-400'
+        };
+
         // --- Helper Functions ---
         function sanitizeStatPoints(value) {
             let val = parseInt(value) || 0;
@@ -939,7 +965,7 @@
             if (!selectedArchetype) {
                 // Reset this piece's stats if no archetype is selected
                 customArmorPieceValues[slot] = { health: 0, melee: 0, grenade: 0, super: 0, class: 0, weapons: 0, tertiaryStat: null };
-                statsDisplay.textContent = `Current ${slot.charAt(0).toUpperCase() + slot.slice(1)} Stats: None`; // Updated this line
+                statsDisplay.textContent = `Current ${slot.charAt(0).toUpperCase() + slot.slice(1)} Stats: None`;
                 calculateAndApplyTotalCustomStats();
                 return;
             }
@@ -958,7 +984,7 @@
                 div.innerHTML = `
                     <label>
                         ${statName.charAt(0).toUpperCase() + statName.slice(1)}:
-                        <span id="custom_${slot}_${statName}_value" class="slider-value">${initialValue}</span>
+                        <span id="custom_${slot}_${statName}_value" class="slider-value ${statColors[statName]}">${initialValue}</span>
                     </label>
                     <div class="custom-slider-flex">
                         <input type="range" id="custom_${slot}_${statName}_slider" min="${min}" max="${max}" value="${initialValue}">
@@ -1014,12 +1040,17 @@
                 tertiarySliderContainer.innerHTML = ''; // Clear previous tertiary slider
 
                 if (selectedTertiaryStat) {
+                    // Pass the stat name to createSliderGroup so it can apply the correct color
                     const tertiarySliderGroup = createSliderGroup(selectedTertiaryStat, 0, 0, 30); // Default to 0, range 0-30
                     tertiarySliderContainer.appendChild(tertiarySliderGroup);
                     // Manually set value and trigger change if there's a stored value for this tertiary stat
                     if (customArmorPieceValues[slot][selectedTertiaryStat]) {
                          tertiarySliderGroup.querySelector('input[type="range"]').value = customArmorPieceValues[slot][selectedTertiaryStat];
-                         tertiarySliderGroup.querySelector('.slider-value').textContent = customArmorPieceValues[slot][selectedTertiaryStat];
+                         // Also update the displayed value and its color class
+                         const tertiaryValueSpan = tertiarySliderGroup.querySelector('.slider-value');
+                         tertiaryValueSpan.textContent = customArmorPieceValues[slot][selectedTertiaryStat];
+                         tertiaryValueSpan.classList.remove(...Object.values(statColors));
+                         tertiaryValueSpan.classList.add(statColors[selectedTertiaryStat]);
                     }
                 }
                 updateSinglePieceStatsDisplay(slot);
@@ -1029,11 +1060,17 @@
             // If an archetype is chosen and we return to this piece, try to restore its values
             if (customArmorPieceValues[slot][primary]) {
                 document.getElementById(`custom_${slot}_${primary}_slider`).value = customArmorPieceValues[slot][primary];
-                document.getElementById(`custom_${slot}_${primary}_value`).textContent = customArmorPieceValues[slot][primary];
+                const primaryValueSpan = document.getElementById(`custom_${slot}_${primary}_value`);
+                primaryValueSpan.textContent = customArmorPieceValues[slot][primary];
+                primaryValueSpan.classList.remove(...Object.values(statColors));
+                primaryValueSpan.classList.add(statColors[primary]);
             }
             if (customArmorPieceValues[slot][secondary]) {
                 document.getElementById(`custom_${slot}_${secondary}_slider`).value = customArmorPieceValues[slot][secondary];
-                document.getElementById(`custom_${slot}_${secondary}_value`).textContent = customArmorPieceValues[slot][secondary];
+                const secondaryValueSpan = document.getElementById(`custom_${slot}_${secondary}_value`);
+                secondaryValueSpan.textContent = customArmorPieceValues[slot][secondary];
+                secondaryValueSpan.classList.remove(...Object.values(statColors));
+                secondaryValueSpan.classList.add(statColors[secondary]);
             }
             if (customArmorPieceValues[slot].tertiaryStat) {
                 tertiarySelect.value = customArmorPieceValues[slot].tertiaryStat;
@@ -1082,13 +1119,17 @@
                 }
             }
 
-            // Update the "Current Stat Overview" section
-            document.getElementById('overview_health_sp').textContent = sanitizeStatPoints(totalCombinedStats.health);
-            document.getElementById('overview_melee_sp').textContent = sanitizeStatPoints(totalCombinedStats.melee);
-            document.getElementById('overview_grenade_sp').textContent = sanitizeStatPoints(totalCombinedStats.grenade);
-            document.getElementById('overview_super_sp').textContent = sanitizeStatPoints(totalCombinedStats.super);
-            document.getElementById('overview_class_sp').textContent = sanitizeStatPoints(totalCombinedStats.class);
-            document.getElementById('overview_weapons_sp').textContent = sanitizeStatPoints(totalCombinedStats.weapons);
+            // Update the "Current Stat Overview" section and apply colors
+            Object.keys(totalCombinedStats).forEach(stat => {
+                const element = document.getElementById(`overview_${stat}_sp`);
+                if (element) {
+                    element.textContent = sanitizeStatPoints(totalCombinedStats[stat]);
+                    // Remove existing color classes to avoid conflicts
+                    element.classList.remove(...Object.values(statColors));
+                    // Add the new color class
+                    element.classList.add(statColors[stat]);
+                }
+            });
 
             updateAllBenefits(); // Trigger the main benefit update
         }
@@ -1123,6 +1164,14 @@
                     console.error(`Benefit container not found for ${categoryKey}_benefits_list`);
                     return;
                 }
+
+                // Update benefit section title with color
+                const titleElement = document.getElementById(`${categoryKey}_benefits_title`);
+                if (titleElement) {
+                    titleElement.classList.remove(...Object.values(statColors)); // Remove all colors first
+                    titleElement.classList.add(statColors[categoryKey]);
+                }
+
 
                 const itemsData = definitions.map((def, index) => {
                     const rawValue = def.calculate(rawSp);
@@ -1161,6 +1210,9 @@
                     const valueSpan = item.element.querySelector('.benefit-value span');
                     if (valueSpan) {
                         valueSpan.textContent = `${displayValue}${definition.unit}${pointsNeededText}`;
+                        // Apply the color based on the category of the benefit
+                        valueSpan.classList.remove(...Object.values(statColors)); // Remove all colors first
+                        valueSpan.classList.add(statColors[categoryKey]);
                     } else {
                         console.error(`Value span not found for key ${definition.key} within its benefit item.`);
                     }
