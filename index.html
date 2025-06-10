@@ -12,6 +12,17 @@
             background-color: #0c0f16; /* Deep dark background */
             color: #e0e6ed; /* Light gray text for readability */
             line-height: 1.6;
+            min-height: 100vh; /* Ensure full viewport height */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align content to the top */
+            padding: 2.5rem 0; /* Add vertical padding */
+        }
+        .container {
+            max-width: 1200px; /* Wider container for 1080p desktop */
+            width: 100%;
+            margin: 0 auto;
+            padding: 1.5rem;
         }
         .stat-card {
             background-color: #1a1e27; /* Slightly lighter dark for cards */
@@ -20,6 +31,9 @@
             margin-bottom: 1.5rem;
             box-shadow: 0 6px 12px -2px rgba(0, 0, 0, 0.25), 0 3px 7px -3px rgba(0, 0, 0, 0.3); /* Deeper shadow */
             border: 1px solid #2d3748; /* Subtle border for definition */
+            height: 100%; /* Ensure cards in a grid have equal height */
+            display: flex;
+            flex-direction: column;
         }
         .stat-card h2 {
             color: #63b3ed; /* Vibrant blue accent for titles */
@@ -38,6 +52,7 @@
             font-weight: 600;
             margin-bottom: 0.35rem; /* Slightly more space */
             color: #a0aec0; /* Medium gray for labels */
+            display: block; /* Ensure label takes full width */
         }
         input[type="number"], select {
             width: 100%;
@@ -111,70 +126,35 @@
             color: #f0e68c; /* Gold accent */
             font-size: 1.05rem;
         }
-        .container {
-            max-width: 950px; /* Slightly wider container */
-            margin: 2.5rem auto;
-            padding: 1.5rem;
-        }
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #1a1e27;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #3c495c;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #63b3ed;
-        }
 
-        /* Button styling */
-        .btn {
-            background-color: #63b3ed;
-            color: #0c0f16; /* Dark text for contrast */
-            padding: 0.85rem 1.8rem; /* Larger padding */
-            border-radius: 0.5rem;
-            font-weight: 700;
+        /* Custom Stat Overview specific styling */
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Auto-fit columns */
+            gap: 1rem;
+            padding-top: 0.75rem;
+        }
+        .overview-stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             text-align: center;
-            cursor: pointer;
-            transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out, transform 0.1s ease-out;
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+            background-color: #212936;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            border: 1px solid #2d3748;
         }
-        .btn:hover {
-            background-color: #4299e1;
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
-            transform: translateY(-1px);
-        }
-        .btn.active {
-            background-color: #4299e1;
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
-            transform: translateY(0);
-        }
-
-        .toggle-buttons button { /* This class is now unused but kept for reference, can be removed */
-            flex: 1;
-            margin: 0 0.4rem;
-            min-width: 140px;
-            font-size: 0.95rem;
-        }
-
-        .selected-helmet-stats, /* These classes are now unused, can be removed */
-        .selected-arms-stats,
-        .selected-chest-stats,
-        .selected-legs-stats,
-        .selected-class_item-stats {
-            margin-top: 0.5rem;
-            margin-bottom: 1rem;
-            padding-left: 0.5rem;
+        .overview-stat-item .stat-label {
             font-size: 0.9rem;
-            color: #b2f5ea;
-            border-left: 3px solid #81e6d9;
-            padding-left: 0.75rem;
+            color: #a0aec0;
+            margin-bottom: 0.25rem;
         }
+        .overview-stat-item .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #81e6d9; /* Teal for overview values */
+        }
+
 
         .custom-piece-stats { /* This class is still used for the custom piece display */
             margin-top: 0.5rem;
@@ -198,15 +178,30 @@
 
         /* Responsive adjustments for smaller screens */
         @media (max-width: 768px) {
-            .grid {
+            .grid-cols-2, .lg\:grid-cols-3 {
                 grid-template-columns: 1fr; /* Single column layout on small screens */
             }
-            .toggle-buttons { /* This class is now unused but kept for reference, can be removed */
-                flex-direction: column; /* Stack buttons vertically */
+        }
+        /* Grid for custom pieces and benefits */
+        .custom-pieces-grid, .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Flexible columns for 3 per row */
+            gap: 1.5rem; /* Gap between cards */
+        }
+        @media (min-width: 1024px) { /* On large screens, aim for 3 columns */
+            .custom-pieces-grid {
+                grid-template-columns: repeat(3, 1fr);
             }
-            .toggle-buttons button { /* This class is now unused but kept for reference, can be removed */
-                margin: 0.5rem 0; /* Space out stacked buttons */
-                width: 100%;
+            .benefits-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        @media (min-width: 768px) and (max-width: 1023px) { /* On medium screens, aim for 2 columns */
+            .custom-pieces-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .benefits-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
     </style>
@@ -215,151 +210,145 @@
     <div class="container">
         <h1 class="text-4xl font-bold text-center text-blue-400 mb-10">Edge of Fate Stat Calculator</h1>
 
-        <div class="grid md:grid-cols-2 gap-8">
-            <!-- Left Column: Custom Pieces Section (Always visible) -->
-            <div>
-                <div id="custom_pieces_section">
-                    <h2 class="text-2xl font-semibold text-blue-400 mb-4">Customize Individual Armor Pieces</h2>
-                    <p class="text-sm text-gray-400 mb-4">
-                        Select an archetype for each piece, then adjust primary, secondary, and one additional stat using sliders.
-                    </p>
-
-                    <div id="custom_armor_slots_container">
-                        <!-- Helmet -->
-                        <div class="stat-card">
-                            <h3 class="text-xl font-semibold text-blue-300 mb-2">Custom Helmet</h3>
-                            <label for="custom_helmet_archetype">Helmet Archetype:</label>
-                            <select id="custom_helmet_archetype">
-                                <option value="">Select Archetype</option>
-                                <option value="Brawler">Brawler (Melee, Health)</option>
-                                <option value="Gunner">Gunner (Weapons, Grenade)</option>
-                                <option value="Specialist">Specialist (Class, Weapons)</option>
-                                <option value="Grenadier">Grenadier (Grenade, Super)</option>
-                                <option value="Paragon">Paragon (Super, Melee)</option>
-                                <option value="Bulwark">Bulwark (Health, Class)</option>
-                            </select>
-                            <div id="custom_helmet_sliders_container" class="mt-4">
-                                <!-- Sliders will be dynamically inserted here -->
-                            </div>
-                            <div id="custom_helmet_stats_display" class="custom-piece-stats text-sm text-gray-400 mt-2">Current Helmet Stats: Health: 0, Melee: 0, Grenade: 0, Super: 0, Class: 0, Weapons: 0</div>
-                        </div>
-
-                        <!-- Arms -->
-                        <div class="stat-card">
-                            <h3 class="text-xl font-semibold text-blue-300 mb-2">Custom Arms</h3>
-                            <label for="custom_arms_archetype">Arms Archetype:</label>
-                            <select id="custom_arms_archetype">
-                                <option value="">Select Archetype</option>
-                                <option value="Brawler">Brawler (Melee, Health)</option>
-                                <option value="Gunner">Gunner (Weapons, Grenade)</option>
-                                <option value="Specialist">Specialist (Class, Weapons)</option>
-                                <option value="Grenadier">Grenadier (Grenade, Super)</option>
-                                <option value="Paragon">Paragon (Super, Melee)</option>
-                                <option value="Bulwark">Bulwark (Health, Class)</option>
-                            </select>
-                            <div id="custom_arms_sliders_container" class="mt-4">
-                                <!-- Sliders will be dynamically inserted here -->
-                            </div>
-                            <div id="custom_arms_stats_display" class="custom-piece-stats text-sm text-gray-400 mt-2">Current Arms Stats: Health: 0, Melee: 0, Grenade: 0, Super: 0, Class: 0, Weapons: 0</div>
-                        </div>
-
-                        <!-- Chest -->
-                        <div class="stat-card">
-                            <h3 class="text-xl font-semibold text-blue-300 mb-2">Custom Chest</h3>
-                            <label for="custom_chest_archetype">Chest Archetype:</label>
-                            <select id="custom_chest_archetype">
-                                <option value="">Select Archetype</option>
-                                <option value="Brawler">Brawler (Melee, Health)</option>
-                                <option value="Gunner">Gunner (Weapons, Grenade)</option>
-                                <option value="Specialist">Specialist (Class, Weapons)</option>
-                                <option value="Grenadier">Grenadier (Grenade, Super)</option>
-                                <option value="Paragon">Paragon (Super, Melee)</option>
-                                <option value="Bulwark">Bulwark (Health, Class)</option>
-                            </select>
-                            <div id="custom_chest_sliders_container" class="mt-4">
-                                <!-- Sliders will be dynamically inserted here -->
-                            </div>
-                            <div id="custom_chest_stats_display" class="custom-piece-stats text-sm text-gray-400 mt-2">Current Chest Stats: Health: 0, Melee: 0, Grenade: 0, Super: 0, Class: 0, Weapons: 0</div>
-                        </div>
-
-                        <!-- Legs -->
-                        <div class="stat-card">
-                            <h3 class="text-xl font-semibold text-blue-300 mb-2">Custom Legs</h3>
-                            <label for="custom_legs_archetype">Legs Archetype:</label>
-                            <select id="custom_legs_archetype">
-                                <option value="">Select Archetype</option>
-                                <option value="Brawler">Brawler (Melee, Health)</option>
-                                <option value="Gunner">Gunner (Weapons, Grenade)</option>
-                                <option value="Specialist">Specialist (Class, Weapons)</option>
-                                <option value="Grenadier">Grenadier (Grenade, Super)</option>
-                                <option value="Paragon">Paragon (Super, Melee)</option>
-                                <option value="Bulwark">Bulwark (Health, Class)</option>
-                            </select>
-                            <div id="custom_legs_sliders_container" class="mt-4">
-                                <!-- Sliders will be dynamically inserted here -->
-                            </div>
-                            <div id="custom_legs_stats_display" class="custom-piece-stats text-sm text-gray-400 mt-2">Current Legs Stats: Health: 0, Melee: 0, Grenade: 0, Super: 0, Class: 0, Weapons: 0</div>
-                        </div>
-
-                        <!-- Class Item -->
-                        <div class="stat-card">
-                            <h3 class="text-xl font-semibold text-blue-300 mb-2">Custom Class Item</h3>
-                            <label for="custom_class_item_archetype">Class Item Archetype:</label>
-                            <select id="custom_class_item_archetype">
-                                <option value="">Select Archetype</option>
-                                <option value="Brawler">Brawler (Melee, Health)</option>
-                                <option value="Gunner">Gunner (Weapons, Grenade)</option>
-                                <option value="Specialist">Specialist (Class, Weapons)</option>
-                                <option value="Grenadier">Grenadier (Grenade, Super)</option>
-                                <option value="Paragon">Paragon (Super, Melee)</option>
-                                <option value="Bulwark">Bulwark (Health, Class)</option>
-                            </select>
-                            <div id="custom_class_item_sliders_container" class="mt-4">
-                                <!-- Sliders will be dynamically inserted here -->
-                            </div>
-                            <div id="custom_class_item_stats_display" class="custom-piece-stats text-sm text-gray-400 mt-2">Current Class Item Stats: Health: 0, Melee: 0, Grenade: 0, Super: 0, Class: 0, Weapons: 0</div>
-                        </div>
-                    </div>
-                    <!-- The "Apply Custom Stats to Overview" button is now removed -->
+        <!-- Current Stat Overview (Now at the very top) -->
+        <div class="stat-card mb-8">
+            <h2 class="text-2xl font-semibold">Current Stat Overview</h2>
+            <div class="overview-grid">
+                <div class="overview-stat-item">
+                    <span class="stat-label">Health</span>
+                    <span class="stat-value" id="overview_health_sp">0</span>
                 </div>
-            </div>
-
-            <!-- Right Column: Current Stat Overview -->
-            <div class="stat-card">
-                <h2 class="text-2xl font-semibold">Current Stat Overview</h2>
-                <div class="text-lg space-y-2">
-                    <div class="flex justify-between items-center benefit-item">
-                        <span class="benefit-name">Health:</span>
-                        <span class="benefit-value"><span id="overview_health_sp">0</span></span>
-                    </div>
-                    <div class="flex justify-between items-center benefit-item">
-                        <span class="benefit-name">Melee:</span>
-                        <span class="benefit-value"><span id="overview_melee_sp">0</span></span>
-                    </div>
-                    <div class="flex justify-between items-center benefit-item">
-                        <span class="benefit-name">Grenade:</span>
-                        <span class="benefit-value"><span id="overview_grenade_sp">0</span></span>
-                    </div>
-                    <div class="flex justify-between items-center benefit-item">
-                        <span class="benefit-name">Super:</span>
-                        <span class="benefit-value"><span id="overview_super_sp">0</span></span>
-                    </div>
-                    <div class="flex justify-between items-center benefit-item">
-                        <span class="benefit-name">Class:</span>
-                        <span class="benefit-value"><span id="overview_class_sp">0</span></span>
-                    </div>
-                    <div class="flex justify-between items-center benefit-item">
-                        <span class="benefit-name">Weapons:</span>
-                        <span class="benefit-value"><span id="overview_weapons_sp">0</span></span>
-                    </div>
+                <div class="overview-stat-item">
+                    <span class="stat-label">Melee</span>
+                    <span class="stat-value" id="overview_melee_sp">0</span>
+                </div>
+                <div class="overview-stat-item">
+                    <span class="stat-label">Grenade</span>
+                    <span class="stat-value" id="overview_grenade_sp">0</span>
+                </div>
+                <div class="overview-stat-item">
+                    <span class="stat-label">Super</span>
+                    <span class="stat-value" id="overview_super_sp">0</span>
+                </div>
+                <div class="overview-stat-item">
+                    <span class="stat-label">Class</span>
+                    <span class="stat-value" id="overview_class_sp">0</span>
+                </div>
+                <div class="overview-stat-item">
+                    <span class="stat-label">Weapons</span>
+                    <span class="stat-value" id="overview_weapons_sp">0</span>
                 </div>
             </div>
         </div>
 
+        <!-- Custom Pieces Section -->
+        <h2 class="text-3xl font-bold text-blue-400 mb-6 text-center">Customize Individual Armor Pieces</h2>
+        <p class="text-md text-gray-400 mb-8 text-center max-w-2xl mx-auto">
+            Select an archetype for each piece, then adjust primary, secondary, and one additional stat using sliders.
+            Changes update live to the overview and benefits.
+        </p>
+        <div id="custom_armor_slots_container" class="custom-pieces-grid">
+            <!-- Helmet -->
+            <div class="stat-card">
+                <h3 class="text-xl font-semibold text-blue-300 mb-2">Custom Helmet</h3>
+                <label for="custom_helmet_archetype">Helmet Archetype:</label>
+                <select id="custom_helmet_archetype">
+                    <option value="">Select Archetype</option>
+                    <option value="Brawler">Brawler (Melee, Health)</option>
+                    <option value="Gunner">Gunner (Weapons, Grenade)</option>
+                    <option value="Specialist">Specialist (Class, Weapons)</option>
+                    <option value="Grenadier">Grenadier (Grenade, Super)</option>
+                    <option value="Paragon">Paragon (Super, Melee)</option>
+                    <option value="Bulwark">Bulwark (Health, Class)</option>
+                </select>
+                <div id="custom_helmet_sliders_container" class="mt-4">
+                    <!-- Sliders will be dynamically inserted here -->
+                </div>
+                <div id="custom_helmet_stats_display" class="custom-piece-stats text-sm text-gray-400 mt-auto">Current Helmet Stats: None</div>
+            </div>
 
-        <!-- Results Section - Arranged in a 3x2 grid as requested -->
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-            <!-- Row 1: Health, Melee, Grenade Benefits -->
+            <!-- Arms -->
+            <div class="stat-card">
+                <h3 class="text-xl font-semibold text-blue-300 mb-2">Custom Arms</h3>
+                <label for="custom_arms_archetype">Arms Archetype:</label>
+                <select id="custom_arms_archetype">
+                    <option value="">Select Archetype</option>
+                    <option value="Brawler">Brawler (Melee, Health)</option>
+                    <option value="Gunner">Gunner (Weapons, Grenade)</option>
+                    <option value="Specialist">Specialist (Class, Weapons)</option>
+                    <option value="Grenadier">Grenadier (Grenade, Super)</option>
+                    <option value="Paragon">Paragon (Super, Melee)</option>
+                    <option value="Bulwark">Bulwark (Health, Class)</option>
+                </select>
+                <div id="custom_arms_sliders_container" class="mt-4">
+                    <!-- Sliders will be dynamically inserted here -->
+                </div>
+                <div id="custom_arms_stats_display" class="custom-piece-stats text-sm text-gray-400 mt-auto">Current Arms Stats: None</div>
+            </div>
+
+            <!-- Chest -->
+            <div class="stat-card">
+                <h3 class="text-xl font-semibold text-blue-300 mb-2">Custom Chest</h3>
+                <label for="custom_chest_archetype">Chest Archetype:</label>
+                <select id="custom_chest_archetype">
+                    <option value="">Select Archetype</option>
+                    <option value="Brawler">Brawler (Melee, Health)</option>
+                    <option value="Gunner">Gunner (Weapons, Grenade)</option>
+                    <option value="Specialist">Specialist (Class, Weapons)</option>
+                    <option value="Grenadier">Grenadier (Grenade, Super)</option>
+                    <option value="Paragon">Paragon (Super, Melee)</option>
+                    <option value="Bulwark">Bulwark (Health, Class)</option>
+                </select>
+                <div id="custom_chest_sliders_container" class="mt-4">
+                    <!-- Sliders will be dynamically inserted here -->
+                </div>
+                <div id="custom_chest_stats_display" class="custom-piece-stats text-sm text-gray-400 mt-auto">Current Chest Stats: None</div>
+            </div>
+
+            <!-- Legs -->
+            <div class="stat-card">
+                <h3 class="text-xl font-semibold text-blue-300 mb-2">Custom Legs</h3>
+                <label for="custom_legs_archetype">Legs Archetype:</label>
+                <select id="custom_legs_archetype">
+                    <option value="">Select Archetype</option>
+                    <option value="Brawler">Brawler (Melee, Health)</option>
+                    <option value="Gunner">Gunner (Weapons, Grenade)</option>
+                    <option value="Specialist">Specialist (Class, Weapons)</option>
+                    <option value="Grenadier">Grenadier (Grenade, Super)</option>
+                    <option value="Paragon">Paragon (Super, Melee)</option>
+                    <option value="Bulwark">Bulwark (Health, Class)</option>
+                </select>
+                <div id="custom_legs_sliders_container" class="mt-4">
+                    <!-- Sliders will be dynamically inserted here -->
+                </div>
+                <div id="custom_legs_stats_display" class="custom-piece-stats text-sm text-gray-400 mt-auto">Current Legs Stats: None</div>
+            </div>
+
+            <!-- Class Item -->
+            <div class="stat-card">
+                <h3 class="text-xl font-semibold text-blue-300 mb-2">Custom Class Item</h3>
+                <label for="custom_class_item_archetype">Class Item Archetype:</label>
+                <select id="custom_class_item_archetype">
+                    <option value="">Select Archetype</option>
+                    <option value="Brawler">Brawler (Melee, Health)</option>
+                    <option value="Gunner">Gunner (Weapons, Grenade)</option>
+                    <option value="Specialist">Specialist (Class, Weapons)</option>
+                    <option value="Grenadier">Grenadier (Grenade, Super)</option>
+                    <option value="Paragon">Paragon (Super, Melee)</option>
+                    <option value="Bulwark">Bulwark (Health, Class)</option>
+                </select>
+                <div id="custom_class_item_sliders_container" class="mt-4">
+                    <!-- Sliders will be dynamically inserted here -->
+                </div>
+                <div id="custom_class_item_stats_display" class="custom-piece-stats text-sm text-gray-400 mt-auto">Current Class Item Stats: None</div>
+            </div>
+        </div>
+
+
+        <!-- Results Section - Benefits -->
+        <h2 class="text-3xl font-bold text-blue-400 mt-10 mb-6 text-center">Calculated Benefits</h2>
+        <div class="benefits-grid">
+            <!-- Health Benefits -->
             <div class="stat-card">
                 <h2 class="text-xl font-semibold">Health Benefits</h2>
                 <div id="health_benefits_list">
@@ -382,6 +371,7 @@
                 </div>
             </div>
 
+            <!-- Melee Benefits -->
             <div class="stat-card">
                 <h2 class="text-xl font-semibold">Melee Benefits</h2>
                 <div id="melee_benefits_list">
@@ -404,6 +394,7 @@
                 </div>
             </div>
 
+            <!-- Grenade Benefits -->
             <div class="stat-card">
                 <h2 class="text-xl font-semibold">Grenade Benefits</h2>
                 <div id="grenade_benefits_list">
@@ -426,7 +417,7 @@
                 </div>
             </div>
 
-            <!-- Row 2: Super, Class, Weapons Benefits -->
+            <!-- Super Benefits -->
             <div class="stat-card">
                 <h2 class="text-xl font-semibold">Super Benefits</h2>
                 <div id="super_benefits_list">
@@ -445,6 +436,7 @@
                 </div>
             </div>
 
+            <!-- Class Benefits -->
             <div class="stat-card">
                 <h2 class="text-xl font-semibold">Class Benefits</h2>
                 <div id="class_benefits_list">
@@ -463,6 +455,7 @@
                 </div>
             </div>
 
+            <!-- Weapons Benefits -->
             <div class="stat-card">
                 <h2 class="text-xl font-semibold">Weapons Benefits</h2>
                 <div id="weapons_benefits_list">
@@ -946,7 +939,7 @@
             if (!selectedArchetype) {
                 // Reset this piece's stats if no archetype is selected
                 customArmorPieceValues[slot] = { health: 0, melee: 0, grenade: 0, super: 0, class: 0, weapons: 0, tertiaryStat: null };
-                statsDisplay.textContent = `Current ${slot.charAt(0).toUpperCase() + slot.slice(1)} Stats: Health: 0, Melee: 0, Grenade: 0, Super: 0, Class: 0, Weapons: 0`;
+                statsDisplay.textContent = `Current ${slot.charAt(0).toUpperCase() + slot.slice(1)} Stats: None`; // Updated this line
                 calculateAndApplyTotalCustomStats();
                 return;
             }
@@ -1089,9 +1082,7 @@
                 }
             }
 
-            // Update the main input fields - these are now effectively 'virtual' inputs
-            // We no longer have physical inputs to update directly if manual input is removed
-            // Instead, we will directly update the overview section
+            // Update the "Current Stat Overview" section
             document.getElementById('overview_health_sp').textContent = sanitizeStatPoints(totalCombinedStats.health);
             document.getElementById('overview_melee_sp').textContent = sanitizeStatPoints(totalCombinedStats.melee);
             document.getElementById('overview_grenade_sp').textContent = sanitizeStatPoints(totalCombinedStats.grenade);
@@ -1105,8 +1096,7 @@
 
         // --- Main Calculation and UI Update ---
         function updateAllBenefits() {
-            // Retrieve values directly from the overview spans or from customArmorPieceValues totals
-            // since manual inputs are removed.
+            // Retrieve values directly from the overview spans
             const rawHealthSp = parseInt(document.getElementById('overview_health_sp').textContent) || 0;
             const rawMeleeSp = parseInt(document.getElementById('overview_melee_sp').textContent) || 0;
             const rawGrenadeSp = parseInt(document.getElementById('overview_grenade_sp').textContent) || 0;
@@ -1122,8 +1112,6 @@
                 grenade: rawGrenadeSp,
                 super: rawSuperSp
             };
-
-            // Update the "Current Stat Overview" section - This is already done by calculateAndApplyTotalCustomStats
 
             // Function to process and reorder benefits for a single category
             function processStatCategory(categoryKey) {
@@ -1193,15 +1181,8 @@
             });
         });
 
-        // Event listener for the "Apply Custom Stats to Overview" button - REMOVED
-        // document.getElementById('apply_custom_stats_btn').addEventListener('click', calculateAndApplyTotalCustomStats);
-
-
         // Initial state: ensure custom pieces section is visible and initialize stats
         document.addEventListener('DOMContentLoaded', () => {
-            // The custom_pieces_section no longer has the 'hidden' class from the start
-            // so no need to explicitly remove it here.
-
             // Initialize the stat display for each custom piece
             Object.keys(customArmorPieceValues).forEach(slot => {
                 // Render controls and initial stats for each piece based on default (0,0,0,0,0,0)
